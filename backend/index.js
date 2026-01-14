@@ -3,6 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('./prisma');
+const { authenticateToken, authorizeRoles } = require('./middleware/auth');
 const app = express();
 const port = 3000;
 
@@ -88,6 +89,21 @@ app.post('/login', async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Protected route for authenticated users
+app.get('/profile', authenticateToken, (req, res) => {
+  res.json({
+    message: 'Welcome to your profile!',
+    userId: req.user.userId,
+    userRole: req.user.role,
+    // In a real application, you would fetch more user details from the DB here
+  });
+});
+
+// Admin-only route
+app.get('/admin', authenticateToken, authorizeRoles(['ADMIN']), (req, res) => {
+  res.json({ message: 'Welcome, Admin!' });
 });
 
 app.listen(port, () => {
