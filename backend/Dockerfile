@@ -13,6 +13,7 @@ COPY . .
 
 
 RUN npx prisma generate
+RUN ls -l node_modules/@prisma/client
 
 EXPOSE 3000
 
