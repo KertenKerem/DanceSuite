@@ -8,11 +8,11 @@ RUN npm install
 
 
 
-COPY . .
+COPY . /usr/src/app
 
 
 
-RUN npx prisma generate
+
 
 EXPOSE 3000
 
