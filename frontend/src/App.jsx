@@ -1,35 +1,36 @@
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+
 function App() {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Sidebar */}
-      <aside style={{ width: '200px', backgroundColor: '#f0f0f0', padding: '20px' }}>
-        <h2>Dashboard</h2>
+    <BrowserRouter>
+      <div style={{ padding: '20px' }}>
         <nav>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li style={{ marginBottom: '10px' }}>
-              <a href="#home">Home</a>
+          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', gap: '20px' }}>
+            <li>
+              <Link to="/login">Login</Link>
             </li>
-            <li style={{ marginBottom: '10px' }}>
-              <a href="#users">Users</a>
+            <li>
+              <Link to="/register">Register</Link>
             </li>
-            <li style={{ marginBottom: '10px' }}>
-              <a href="#settings">Settings</a>
+            <li>
+              <Link to="/dashboard">Dashboard</Link>
             </li>
           </ul>
         </nav>
-      </aside>
 
-      {/* Main Content Area */}
-      <main style={{ flexGrow: 1, padding: '20px' }}>
-        <header style={{ marginBottom: '20px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
-          <h1>Welcome to DanceSuite!</h1>
-        </header>
-        <section>
-          <p>This is the main content area of your dashboard.</p>
-          <p>More features will be added here soon.</p>
-        </section>
-      </main>
-    </div>
+        <hr style={{ margin: '20px 0' }} />
+
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/" element={<LoginPage />} /> {/* Default route */}
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }
 
