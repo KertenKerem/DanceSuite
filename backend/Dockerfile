@@ -6,13 +6,10 @@ COPY package*.json ./
 
 RUN npm install
 
+COPY . .
 
-
-COPY . /usr/src/app
-
-
-
-
+RUN npx prisma generate
+RUN ls -l /usr/src/app/node_modules/@prisma/client/
 
 EXPOSE 3000
 
