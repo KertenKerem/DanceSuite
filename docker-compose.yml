@@ -11,23 +11,12 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  backend:
-    build: ./backend
-    ports:
-      - '3000:3000'
-    environment:
-      DATABASE_URL: postgresql://user:password@db:5432/dancesuite
-      JWT_SECRET: your-super-secret-jwt-secret
-    depends_on:
-      - db
-    restart: always
-
   frontend:
     build: ./frontend
     ports:
       - '3001:3000' # Map host port 3001 to container port 3000
     depends_on:
-      - backend
+      - db # frontend will now depend directly on db
     restart: always
 
 volumes:
