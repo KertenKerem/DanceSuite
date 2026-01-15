@@ -13,7 +13,7 @@ COPY . .
 
 
 RUN npx prisma generate
-RUN ls -l prisma/generated/client
+RUN ls -l prisma/generated/client > /tmp/prisma_client_files.txt && cat /tmp/prisma_client_files.txt
 
 EXPOSE 3000
 
