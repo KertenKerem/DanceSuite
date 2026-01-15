@@ -6,7 +6,7 @@ import PrivateRoute from './components/PrivateRoute';
 function App() {
   return (
     <BrowserRouter>
-      <div style={{ padding: '20px' }}>
+      <div>
         <nav>
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', gap: '20px' }}>
             <li>
@@ -17,8 +17,6 @@ function App() {
             </li>
           </ul>
         </nav>
-
-        <hr style={{ margin: '20px 0' }} />
 
         <Routes>
           <Route path="/login" element={<AuthPage />} />

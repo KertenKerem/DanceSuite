@@ -1,37 +1,83 @@
 import React from 'react';
+import { AppBar, Box, Toolbar, Typography, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Button } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
+import PeopleIcon from '@mui/icons-material/People';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { useNavigate } from 'react-router-dom';
+
+const drawerWidth = 240;
 
 const DashboardPage = () => {
-    return (
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-            {/* Sidebar */}
-            <aside style={{ width: '200px', backgroundColor: '#f0f0f0', padding: '20px' }}>
-                <h2>Dashboard</h2>
-                <nav>
-                    <ul style={{ listStyle: 'none', padding: 0 }}>
-                        <li style={{ marginBottom: '10px' }}>
-                            <a href="#home">Home</a>
-                        </li>
-                        <li style={{ marginBottom: '10px' }}>
-                            <a href="#users">Users</a>
-                        </li>
-                        <li style={{ marginBottom: '10px' }}>
-                            <a href="#settings">Settings</a>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
+    const navigate = useNavigate();
 
-            {/* Main Content Area */}
-            <main style={{ flexGrow: 1, padding: '20px' }}>
-                <header style={{ marginBottom: '20px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
-                    <h1>Welcome to DanceSuite!</h1>
-                </header>
-                <section>
-                    <p>This is the main content area of your dashboard.</p>
-                    <p>More features will be added here soon.</p>
-                </section>
-            </main>
-        </div>
+    const handleLogout = () => {
+        localStorage.removeItem('jwtToken');
+        navigate('/login');
+    };
+
+    return (
+        <Box sx={{ display: 'flex' }}>
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                <Toolbar>
+                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+                        DanceSuite Dashboard
+                    </Typography>
+                    <Button color="inherit" onClick={handleLogout}>Logout</Button>
+                </Toolbar>
+            </AppBar>
+            <Drawer
+                variant="permanent"
+                sx={{
+                    width: drawerWidth,
+                    flexShrink: 0,
+                    [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+                }}
+            >
+                <Toolbar />
+                <Box sx={{ overflow: 'auto' }}>
+                    <List>
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <HomeIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Home" />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <PeopleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Users" />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                            <ListItemButton>
+                                <ListItemIcon>
+                                    <SettingsIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Settings" />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                    <Divider />
+                    {/* Additional navigation items can be added here */}
+                </Box>
+            </Drawer>
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                <Toolbar /> {/* This is to offset the content below the AppBar */}
+                <Typography variant="h4" gutterBottom>
+                    Welcome to your Dashboard!
+                </Typography>
+                <Typography paragraph>
+                    This is the main content area of your dashboard.
+                </Typography>
+                <Typography paragraph>
+                    More features and data visualizations will be added here.
+                </Typography>
+            </Box>
+        </Box>
     );
 };
 

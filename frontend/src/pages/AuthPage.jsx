@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, Box, Typography, TextField, Button, Link as MuiLink } from '@mui/material';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true); // true for login form, false for register form
@@ -49,50 +50,76 @@ const AuthPage = () => {
     };
 
     return (
-        <div>
-            <h1>{isLogin ? 'Login' : 'Register'}</h1>
-            <form onSubmit={handleAuth}>
-                {!isLogin && (
-                    <div>
-                        <label htmlFor="name">Name:</label>
-                        <input
-                            type="text"
+        <Container component="main" maxWidth="xs">
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography component="h1" variant="h5">
+                    {isLogin ? 'Login' : 'Register'}
+                </Typography>
+                <Box component="form" onSubmit={handleAuth} noValidate sx={{ mt: 1 }}>
+                    {!isLogin && (
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
                             id="name"
+                            label="Name"
+                            name="name"
+                            autoComplete="name"
+                            autoFocus
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
-                    </div>
-                )}
-                <div>
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
+                    )}
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
                         id="email"
+                        label="Email Address"
+                        name="email"
+                        autoComplete="email"
+                        autoFocus={isLogin}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        required
                     />
-                </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
-                    <input
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Password"
                         type="password"
                         id="password"
+                        autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
                     />
-                </div>
-                <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
-            </form>
-            {message && <p style={{ color: message.includes('successful') ? 'green' : 'red' }}>{message}</p>}
-            <p>
-                {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-                <button onClick={() => setIsLogin(!isLogin)}>
-                    {isLogin ? 'Register here' : 'Login here'}
-                </button>
-            </p>
-        </div>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        {isLogin ? 'Login' : 'Register'}
+                    </Button>
+                </Box>
+                {message && (
+                    <Typography variant="body2" color={message.includes('successful') ? 'success.main' : 'error.main'} sx={{ mt: 2 }}>
+                        {message}
+                    </Typography>
+                )}
+                <MuiLink component="button" variant="body2" onClick={() => setIsLogin(!isLogin)} sx={{ mt: 2 }}>
+                    {isLogin ? "Don't have an account? Register here" : "Already have an account? Login here"}
+                </MuiLink>
+            </Box>
+        </Container>
     );
 };
 
