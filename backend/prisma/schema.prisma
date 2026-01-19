@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments Enrollment[]
+  payments    Payment[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+model Class {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  instructorId String?
+  maxCapacity Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  schedules   Schedule[]
+  enrollments Enrollment[]
+
+  @@map("classes")
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  classId   String
+  dayOfWeek Int      // 0 = Sunday, 6 = Saturday
+  startTime String   // Format: "HH:MM"
+  endTime   String   // Format: "HH:MM"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  classId   String
+  status    EnrollmentStatus @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId])
+  @@map("enrollments")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  userId        String
+  amount        Float
+  status        PaymentStatus @default(PENDING)
+  description   String?
+  paymentDate   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}

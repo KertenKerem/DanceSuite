@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dancesuite-db
+    environment:
+      POSTGRES_USER: dancesuite
+      POSTGRES_PASSWORD: dancesuite
+      POSTGRES_DB: dancesuite
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dancesuite-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dancesuite-backend
+    environment:
+      DATABASE_URL: postgresql://dancesuite:dancesuite@postgres:5432/dancesuite
+      JWT_SECRET: dev-secret-key
+      PORT: 3000
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - dancesuite-network
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dancesuite-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - dancesuite-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  dancesuite-network:
+    driver: bridge

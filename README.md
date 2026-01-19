@@ -1,5 +1,8 @@
 # DanceSuite
 
+![License](https://img.shields.io/github/license/KertenKerem/DanceSuite)
+![CI Status](https://github.com/KertenKerem/DanceSuite/workflows/CI%2FCD%20Pipeline/badge.svg)
+
 DanceSuite is a comprehensive, all-in-one management software for dance studios. It helps studio owners manage their classes, schedules, students, and billing with ease.
 
 ## Features
@@ -9,27 +12,138 @@ DanceSuite is a comprehensive, all-in-one management software for dance studios.
 *   **Billing & Invoicing:** Automate invoicing and track payments.
 *   **Reporting:** Generate reports on revenue, attendance, and more.
 *   **Role-Based Access Control:** Secure access to different parts of the application based on user roles.
+*   **Authentication & Authorization:** Secure JWT-based authentication with role-based permissions.
+*   **RESTful API:** Well-documented API for all operations.
+*   **Responsive Design:** Works seamlessly on desktop and mobile devices.
 
-## Getting Started
+## Technology Stack
 
-To get a local copy up and running, follow these simple steps.
+### Frontend
+- React 18.3
+- React Router
+- Axios
+- Vite
 
-### Prerequisites
+### Backend
+- Node.js
+- Express.js
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+- bcrypt
 
-*   Node.js
-*   npm
-*   Docker (optional)
+### DevOps
+- Docker & Docker Compose
+- GitHub Actions CI/CD
 
-### Installation
+## Quick Start
+
+### Using Docker (Recommended)
+
+```bash
+# Clone the repository
+git clone https://github.com/KertenKerem/DanceSuite.git
+cd DanceSuite
+
+# Copy environment variables
+cp .env.example .env
+
+# Start all services
+docker-compose up -d
+
+# Access the application
+# Frontend: http://localhost:5173
+# Backend API: http://localhost:3000
+```
+
+### Manual Setup
+
+See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
+
+## Prerequisites
+
+*   Node.js (v20 or higher)
+*   npm (v10 or higher)
+*   PostgreSQL (v15 or higher)
+*   Docker & Docker Compose (optional)
+
+## Installation
 
 1.  Clone the repo
     ```sh
     git clone https://github.com/KertenKerem/DanceSuite.git
+    cd DanceSuite
     ```
-2.  Install NPM packages
+
+2.  Setup Backend
     ```sh
+    cd backend
     npm install
+    cp .env.example .env
+    # Edit .env with your database credentials
+    npx prisma migrate dev
+    npx prisma generate
+    npm run prisma:seed
+    npm run dev
     ```
+
+3.  Setup Frontend
+    ```sh
+    cd frontend
+    npm install
+    cp .env.example .env
+    npm run dev
+    ```
+
+## Documentation
+
+- [API Documentation](docs/API.md) - Complete API endpoint reference
+- [Setup Guide](docs/SETUP.md) - Detailed setup instructions
+- [Architecture Overview](docs/ARCHITECTURE.md) - System architecture and design
+
+## Default Credentials
+
+After running the database seed:
+
+**Admin:**
+- Email: admin@dancesuite.com
+- Password: admin123
+
+**Instructor:**
+- Email: instructor@dancesuite.com
+- Password: instructor123
+
+**Student:**
+- Email: student@dancesuite.com
+- Password: student123
+
+⚠️ **Change these in production!**
+
+## Project Structure
+
+```
+DanceSuite/
+├── backend/                # Express.js backend
+│   ├── src/
+│   │   ├── routes/         # API routes
+│   │   ├── middleware/     # Express middleware
+│   │   └── index.js        # Entry point
+│   ├── prisma/
+│   │   ├── schema.prisma   # Database schema
+│   │   └── seed.js         # Database seeding
+│   └── package.json
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API services
+│   │   └── App.jsx         # Main app component
+│   └── package.json
+├── docs/                   # Documentation
+├── .github/
+│   └── workflows/          # CI/CD pipelines
+└── docker-compose.yml      # Docker orchestration
+```
 
 ## Contributing
 
@@ -44,3 +158,24 @@ Don't forget to give the project a star! Thanks again!
 3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## Support
+
+For support, email support@dancesuite.com or open an issue on GitHub.
+
+## Roadmap
+
+- [ ] Email notifications
+- [ ] Calendar integration
+- [ ] Attendance tracking
+- [ ] Advanced reporting
+- [ ] Mobile app
+- [ ] Payment gateway integration
+- [ ] Automated invoicing
+- [ ] Performance analytics

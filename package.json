@@ -1,0 +1,30 @@
+{
+  "name": "dancesuite",
+  "version": "1.0.0",
+  "description": "Dance Studio Management Software",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "prisma:migrate": "cd backend && npx prisma migrate dev",
+    "prisma:generate": "cd backend && npx prisma generate",
+    "prisma:seed": "cd backend && npm run prisma:seed",
+    "prisma:studio": "cd backend && npx prisma studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KertenKerem/DanceSuite.git"
+  },
+  "keywords": [
+    "dance",
+    "studio",
+    "management",
+    "scheduling",
+    "billing"
+  ],
+  "author": "KertenKerem",
+  "license": "MIT"
+}

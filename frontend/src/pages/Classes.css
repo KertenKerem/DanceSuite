@@ -1,0 +1,30 @@
+.class-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.class-card h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.class-info {
+  flex-grow: 1;
+  margin: 10px 0;
+}
+
+.class-info ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.class-info li {
+  padding: 2px 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+}

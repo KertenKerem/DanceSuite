@@ -1,0 +1,51 @@
+.payment-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payment-table thead {
+  background-color: #f8f9fa;
+}
+
+.payment-table th,
+.payment-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.payment-table th {
+  font-weight: 600;
+  color: #495057;
+}
+
+.payment-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.payment-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-failed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-refunded {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
