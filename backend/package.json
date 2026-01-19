@@ -5,13 +5,13 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
-    "test": "jest",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio",
-    "prisma:seed": "node prisma/seed.js"
+    "start": "bun run src/index.js",
+    "dev": "bun --watch src/index.js",
+    "test": "bun test",
+    "prisma:generate": "bunx prisma generate",
+    "prisma:migrate": "bunx prisma migrate dev",
+    "prisma:studio": "bunx prisma studio",
+    "prisma:seed": "bun run prisma/seed.js"
   },
   "keywords": ["dance", "studio", "management", "scheduling"],
   "author": "",
@@ -26,8 +26,7 @@
     "express-validator": "^7.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0",
     "prisma": "^5.14.0",
-    "jest": "^29.7.0"
+    "@types/bun": "latest"
   }
 }

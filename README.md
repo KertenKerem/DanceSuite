@@ -1,9 +1,10 @@
 # DanceSuite
 
 ![License](https://img.shields.io/github/license/KertenKerem/DanceSuite)
-![CI Status](https://github.com/KertenKerem/DanceSuite/workflows/CI%2FCD%20Pipeline/badge.svg)
+![Bun](https://img.shields.io/badge/Bun-1.0+-black?logo=bun)
+![CI Status](https://img.shields.io/github/actions/workflow/status/KertenKerem/DanceSuite/ci.yml?branch=main&label=CI%2FCD)
 
-DanceSuite is a comprehensive, all-in-one management software for dance studios. It helps studio owners manage their classes, schedules, students, and billing with ease.
+DanceSuite is a comprehensive, all-in-one management software for dance studios. It helps studio owners manage their classes, schedules, students, and billing with ease. ⚡ Powered by **Bun** for blazing-fast performance!
 
 ## Features
 
@@ -15,17 +16,19 @@ DanceSuite is a comprehensive, all-in-one management software for dance studios.
 *   **Authentication & Authorization:** Secure JWT-based authentication with role-based permissions.
 *   **RESTful API:** Well-documented API for all operations.
 *   **Responsive Design:** Works seamlessly on desktop and mobile devices.
+*   **⚡ Lightning Fast:** Built with Bun for ultra-fast runtime and package management.
 
 ## Technology Stack
 
 ### Frontend
+- **Bun** (Runtime & Package Manager)
 - React 18.3
 - React Router
 - Axios
 - Vite
 
 ### Backend
-- Node.js
+- **Bun** (Runtime & Package Manager)
 - Express.js
 - Prisma ORM
 - PostgreSQL
@@ -62,8 +65,7 @@ See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
 
 ## Prerequisites
 
-*   Node.js (v20 or higher)
-*   npm (v10 or higher)
+*   **Bun** (v1.0 or higher) - [Install Bun](https://bun.sh)
 *   PostgreSQL (v15 or higher)
 *   Docker & Docker Compose (optional)
 
@@ -78,21 +80,21 @@ See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
 2.  Setup Backend
     ```sh
     cd backend
-    npm install
+    bun install
     cp .env.example .env
     # Edit .env with your database credentials
-    npx prisma migrate dev
-    npx prisma generate
-    npm run prisma:seed
-    npm run dev
+    bunx prisma migrate dev
+    bunx prisma generate
+    bun run prisma:seed
+    bun run dev
     ```
 
 3.  Setup Frontend
     ```sh
     cd frontend
-    npm install
+    bun install
     cp .env.example .env
-    npm run dev
+    bun run dev
     ```
 
 ## Documentation

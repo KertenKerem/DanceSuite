@@ -1,18 +1,18 @@
 {
   "name": "dancesuite",
   "version": "1.0.0",
-  "description": "Dance Studio Management Software",
+  "description": "Dance Studio Management Software - Built with Bun",
   "scripts": {
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "cd backend && bun install && cd ../frontend && bun install",
+    "dev:backend": "cd backend && bun run dev",
+    "dev:frontend": "cd frontend && bun run dev",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
-    "prisma:migrate": "cd backend && npx prisma migrate dev",
-    "prisma:generate": "cd backend && npx prisma generate",
-    "prisma:seed": "cd backend && npm run prisma:seed",
-    "prisma:studio": "cd backend && npx prisma studio"
+    "prisma:migrate": "cd backend && bunx prisma migrate dev",
+    "prisma:generate": "cd backend && bunx prisma generate",
+    "prisma:seed": "cd backend && bun run prisma:seed",
+    "prisma:studio": "cd backend && bunx prisma studio"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,8 @@
     "studio",
     "management",
     "scheduling",
-    "billing"
+    "billing",
+    "bun"
   ],
   "author": "KertenKerem",
   "license": "MIT"
