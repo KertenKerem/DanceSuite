@@ -4,9 +4,11 @@ WORKDIR /app
 
 COPY package.json bun.lockb* ./
 
-RUN bun install
+RUN bun install --frozen-lockfile
 
-COPY . .
+COPY src ./src
+COPY public ./public
+COPY index.html vite.config.js ./
 
 EXPOSE 5173
 
