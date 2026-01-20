@@ -15,10 +15,17 @@
   max-width: 400px;
 }
 
+.auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 .auth-card h1 {
   text-align: center;
   color: #2c3e50;
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
 .auth-card h2 {

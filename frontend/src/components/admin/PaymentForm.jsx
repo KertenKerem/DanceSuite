@@ -26,8 +26,6 @@ const PaymentForm = ({ payment, users, onSave, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className="payment-form">
-      <h2>{isEditing ? 'Update Payment' : 'Create Payment'}</h2>
-
       {!isEditing && (
         <div className="form-group">
           <label>Student</label>

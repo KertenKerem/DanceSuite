@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from '../components/LanguageSelector';
 import './Auth.css';
 
 const Login = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -31,7 +34,7 @@ const Login = () => {
       login(response.data.token, response.data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      setError(err.response?.data?.error || t('auth.invalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -40,11 +43,14 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>DanceSuite</h1>
-        <h2>Login to your account</h2>
+        <div className="auth-header">
+          <h1>DanceSuite</h1>
+          <LanguageSelector />
+        </div>
+        <h2>{t('auth.signIn')}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email</label>
+            <label>{t('auth.email')}</label>
             <input
               type="email"
               name="email"
@@ -54,7 +60,7 @@ const Login = () => {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>{t('auth.password')}</label>
             <input
               type="password"
               name="password"
@@ -65,11 +71,11 @@ const Login = () => {
           </div>
           {error && <div className="error-message">{error}</div>}
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? t('common.loading') : t('auth.login')}
           </button>
         </form>
         <p className="auth-link">
-          Don't have an account? <Link to="/register">Register here</Link>
+          {t('auth.noAccount')} <Link to="/register">{t('auth.signUp')}</Link>
         </p>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { useState } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -13,6 +14,8 @@ import ClassManagement from './pages/admin/ClassManagement';
 import PaymentManagement from './pages/admin/PaymentManagement';
 import AttendanceTaking from './pages/admin/AttendanceTaking';
 import ReportsDashboard from './pages/admin/ReportsDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import Accounting from './pages/admin/Accounting';
 import PrivateRoute from './components/PrivateRoute';
 import RoleBasedRoute from './components/RoleBasedRoute';
 import Navigation from './components/Navigation';
@@ -20,10 +23,11 @@ import './App.css';
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
+  const { t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading">{t('common.loading')}</div>;
   }
 
   return (
@@ -51,9 +55,19 @@ function AppContent() {
               <AttendanceTaking />
             </RoleBasedRoute>
           } />
+          <Route path="/admin/users" element={
+            <RoleBasedRoute allowedRoles={['ADMIN']}>
+              <UserManagement />
+            </RoleBasedRoute>
+          } />
           <Route path="/admin/payments" element={
             <RoleBasedRoute allowedRoles={['ADMIN']}>
               <PaymentManagement />
+            </RoleBasedRoute>
+          } />
+          <Route path="/admin/accounting" element={
+            <RoleBasedRoute allowedRoles={['ADMIN']}>
+              <Accounting />
             </RoleBasedRoute>
           } />
           <Route path="/admin/reports" element={
@@ -72,9 +86,11 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </LanguageProvider>
     </Router>
   );
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -19,6 +19,12 @@ router.get('/', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        phone: true,
+        address: true,
+        birthday: true,
+        parentName: true,
+        parentPhone: true,
+        parentEmail: true,
         createdAt: true,
         _count: {
           select: {
@@ -46,6 +52,12 @@ router.get('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        phone: true,
+        address: true,
+        birthday: true,
+        parentName: true,
+        parentPhone: true,
+        parentEmail: true,
         createdAt: true,
         enrollments: {
           include: {
@@ -67,7 +79,11 @@ router.get('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
 // Create user (Admin only)
 router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
-    const { email, password, firstName, lastName, role } = req.body;
+    const {
+      email, password, firstName, lastName, role,
+      phone, address, birthday,
+      parentName, parentPhone, parentEmail
+    } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -81,7 +97,13 @@ router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
         password: hashedPassword,
         firstName,
         lastName,
-        role: role || 'STUDENT'
+        role: role || 'STUDENT',
+        phone,
+        address,
+        birthday: birthday ? new Date(birthday) : null,
+        parentName,
+        parentPhone,
+        parentEmail
       },
       select: {
         id: true,
@@ -89,6 +111,12 @@ router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        phone: true,
+        address: true,
+        birthday: true,
+        parentName: true,
+        parentPhone: true,
+        parentEmail: true,
         createdAt: true
       }
     });
@@ -101,9 +129,24 @@ router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
 // Update user (Admin only)
 router.put('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
-    const { email, password, firstName, lastName, role } = req.body;
+    const {
+      email, password, firstName, lastName, role,
+      phone, address, birthday,
+      parentName, parentPhone, parentEmail
+    } = req.body;
 
-    const updateData = { firstName, lastName, role };
+    const updateData = {
+      firstName,
+      lastName,
+      role,
+      phone,
+      address,
+      birthday: birthday ? new Date(birthday) : null,
+      parentName,
+      parentPhone,
+      parentEmail
+    };
+
     if (email) {
       const existingUser = await prisma.user.findFirst({
         where: { email, NOT: { id: req.params.id } }
@@ -126,6 +169,12 @@ router.put('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        phone: true,
+        address: true,
+        birthday: true,
+        parentName: true,
+        parentPhone: true,
+        parentEmail: true,
         createdAt: true
       }
     });

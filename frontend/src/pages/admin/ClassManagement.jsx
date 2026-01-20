@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { classAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
 import ClassForm from '../../components/admin/ClassForm';
 import './ClassManagement.css';
 
 const ClassManagement = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,7 +26,7 @@ const ClassManagement = () => {
       const response = await classAPI.getAll();
       setClasses(response.data);
     } catch (err) {
-      setError('Failed to load classes');
+      setError(t('errors.general'));
     } finally {
       setLoading(false);
     }
@@ -41,13 +43,13 @@ const ClassManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this class?')) return;
+    if (!window.confirm(t('classes.deleteConfirm'))) return;
 
     try {
       await classAPI.delete(id);
       setClasses(classes.filter(c => c.id !== id));
     } catch (err) {
-      alert('Failed to delete class');
+      alert(t('errors.general'));
     }
   };
 
@@ -63,7 +65,7 @@ const ClassManagement = () => {
       setShowModal(false);
       fetchClasses();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to save class');
+      alert(err.response?.data?.error || t('errors.general'));
     }
   };
 
@@ -72,31 +74,31 @@ const ClassManagement = () => {
   };
 
   const getDayName = (day) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[day] || day;
+    const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return t(`classes.days.${dayKeys[day]}`) || day;
   };
 
-  if (loading) return <div className="loading">Loading classes...</div>;
+  if (loading) return <div className="loading">{t('common.loading')}</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="class-management">
       <div className="page-header">
-        <h1>Manage Classes</h1>
+        <h1>{t('classes.manageTitle')}</h1>
         <button onClick={handleCreate} className="btn-primary">
-          + Add New Class
+          + {t('classes.addClass')}
         </button>
       </div>
 
       <table className="classes-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Capacity</th>
-            <th>Enrolled</th>
-            <th>Schedule</th>
-            <th>Actions</th>
+            <th>{t('common.name')}</th>
+            <th>{t('classes.description')}</th>
+            <th>{t('classes.capacity')}</th>
+            <th>{t('classes.enrolled')}</th>
+            <th>{t('classes.schedule')}</th>
+            <th>{t('common.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -117,11 +119,11 @@ const ClassManagement = () => {
                 {canEditClass(classItem) && (
                   <div className="action-buttons">
                     <button onClick={() => handleEdit(classItem)} className="btn-edit">
-                      Edit
+                      {t('common.edit')}
                     </button>
                     {isAdmin && (
                       <button onClick={() => handleDelete(classItem.id)} className="btn-delete">
-                        Delete
+                        {t('common.delete')}
                       </button>
                     )}
                   </div>
@@ -132,15 +134,17 @@ const ClassManagement = () => {
         </tbody>
       </table>
 
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
-          <ClassForm
-            classData={editingClass}
-            onSave={handleSave}
-            onCancel={() => setShowModal(false)}
-          />
-        </Modal>
-      )}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingClass ? t('classes.editClass') : t('classes.addClass')}
+      >
+        <ClassForm
+          classData={editingClass}
+          onSave={handleSave}
+          onCancel={() => setShowModal(false)}
+        />
+      </Modal>
     </div>
   );
 };

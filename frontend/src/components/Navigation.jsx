@@ -1,9 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from './LanguageSelector';
 import './Navigation.css';
 
 const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -29,11 +32,12 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
           <span className="toggle-line"></span>
         </button>
         <div className="top-bar-right">
+          <LanguageSelector />
           <span className="user-info">
             {user?.firstName} {user?.lastName}
             <span className="user-role">{user?.role}</span>
           </span>
-          <button onClick={handleLogout} className="btn-logout">Logout</button>
+          <button onClick={handleLogout} className="btn-logout">{t('auth.logout')}</button>
         </div>
       </header>
 
@@ -46,23 +50,25 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
         <nav className="sidebar-nav">
           <div className="nav-section">
             <span className="nav-section-title">Main</span>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/classes">Classes</Link>
-            <Link to="/enrollments">My Enrollments</Link>
-            <Link to="/payments">Payments</Link>
-            <Link to="/attendance">Attendance</Link>
-            <Link to="/progress">My Progress</Link>
+            <Link to="/dashboard">{t('nav.dashboard')}</Link>
+            <Link to="/classes">{t('nav.classes')}</Link>
+            <Link to="/enrollments">{t('nav.enrollments')}</Link>
+            <Link to="/payments">{t('nav.payments')}</Link>
+            <Link to="/attendance">{t('nav.attendance')}</Link>
+            <Link to="/progress">{t('nav.progress')}</Link>
           </div>
 
           {isAdminOrInstructor && (
             <div className="nav-section">
-              <span className="nav-section-title">Management</span>
-              <Link to="/admin/classes">Manage Classes</Link>
-              <Link to="/admin/attendance">Take Attendance</Link>
+              <span className="nav-section-title">{t('nav.management')}</span>
+              <Link to="/admin/classes">{t('nav.manageClasses')}</Link>
+              <Link to="/admin/attendance">{t('nav.takeAttendance')}</Link>
               {isAdmin && (
                 <>
-                  <Link to="/admin/payments">Manage Payments</Link>
-                  <Link to="/admin/reports">Reports</Link>
+                  <Link to="/admin/users">{t('nav.manageUsers')}</Link>
+                  <Link to="/admin/payments">{t('nav.managePayments')}</Link>
+                  <Link to="/admin/accounting">{t('nav.accounting')}</Link>
+                  <Link to="/admin/reports">{t('nav.reports')}</Link>
                 </>
               )}
             </div>

@@ -5,6 +5,27 @@
   margin-bottom: 20px;
 }
 
+.dashboard-grid .card {
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+}
+
+.dashboard-grid .card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.dashboard-grid .card .btn-primary {
+  display: inline-block;
+  margin-top: auto;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  text-align: center;
+  width: fit-content;
+}
+
 .stat {
   font-size: 3rem;
   font-weight: bold;

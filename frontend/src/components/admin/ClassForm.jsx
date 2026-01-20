@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { userAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import './ClassForm.css';
 
 const ClassForm = ({ classData, onSave, onCancel }) => {
+  const { t } = useLanguage();
   const [instructors, setInstructors] = useState([]);
   const [formData, setFormData] = useState({
     name: classData?.name || '',
@@ -61,21 +63,19 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
   };
 
   const days = [
-    { value: 0, label: 'Sunday' },
-    { value: 1, label: 'Monday' },
-    { value: 2, label: 'Tuesday' },
-    { value: 3, label: 'Wednesday' },
-    { value: 4, label: 'Thursday' },
-    { value: 5, label: 'Friday' },
-    { value: 6, label: 'Saturday' }
+    { value: 0, key: 'sunday' },
+    { value: 1, key: 'monday' },
+    { value: 2, key: 'tuesday' },
+    { value: 3, key: 'wednesday' },
+    { value: 4, key: 'thursday' },
+    { value: 5, key: 'friday' },
+    { value: 6, key: 'saturday' }
   ];
 
   return (
     <form onSubmit={handleSubmit} className="class-form">
-      <h2>{classData ? 'Edit Class' : 'Create New Class'}</h2>
-
       <div className="form-group">
-        <label>Class Name</label>
+        <label>{t('classes.className')}</label>
         <input
           type="text"
           name="name"
@@ -86,7 +86,7 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
       </div>
 
       <div className="form-group">
-        <label>Description</label>
+        <label>{t('classes.description')}</label>
         <textarea
           name="description"
           value={formData.description}
@@ -96,7 +96,7 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
       </div>
 
       <div className="form-group">
-        <label>Max Capacity</label>
+        <label>{t('classes.capacity')}</label>
         <input
           type="number"
           name="maxCapacity"
@@ -108,13 +108,13 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
       </div>
 
       <div className="form-group">
-        <label>Instructor</label>
+        <label>{t('classes.instructor')}</label>
         <select
           name="instructorId"
           value={formData.instructorId}
           onChange={handleChange}
         >
-          <option value="">Select Instructor</option>
+          <option value="">{t('classes.selectInstructor')}</option>
           {instructors.map(instructor => (
             <option key={instructor.id} value={instructor.id}>
               {instructor.firstName} {instructor.lastName}
@@ -124,7 +124,7 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
       </div>
 
       <div className="form-group">
-        <label>Schedules</label>
+        <label>{t('classes.schedules')}</label>
         {formData.schedules.map((schedule, index) => (
           <div key={index} className="schedule-row">
             <select
@@ -132,7 +132,7 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
               onChange={(e) => handleScheduleChange(index, 'dayOfWeek', e.target.value)}
             >
               {days.map(day => (
-                <option key={day.value} value={day.value}>{day.label}</option>
+                <option key={day.value} value={day.value}>{t(`classes.days.${day.key}`)}</option>
               ))}
             </select>
             <input
@@ -140,7 +140,7 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
               value={schedule.startTime}
               onChange={(e) => handleScheduleChange(index, 'startTime', e.target.value)}
             />
-            <span>to</span>
+            <span>-</span>
             <input
               type="time"
               value={schedule.endTime}
@@ -148,22 +148,22 @@ const ClassForm = ({ classData, onSave, onCancel }) => {
             />
             {formData.schedules.length > 1 && (
               <button type="button" onClick={() => removeSchedule(index)} className="btn-remove">
-                Remove
+                {t('classes.removeSchedule')}
               </button>
             )}
           </div>
         ))}
         <button type="button" onClick={addSchedule} className="btn-add-schedule">
-          + Add Schedule
+          + {t('classes.addSchedule')}
         </button>
       </div>
 
       <div className="form-actions">
         <button type="button" onClick={onCancel} className="btn-cancel">
-          Cancel
+          {t('common.cancel')}
         </button>
         <button type="submit" className="btn-save">
-          {classData ? 'Update Class' : 'Create Class'}
+          {classData ? t('common.update') : t('common.create')}
         </button>
       </div>
     </form>

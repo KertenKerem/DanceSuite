@@ -21,6 +21,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Student-specific fields
+  phone       String?
+  address     String?
+  birthday    DateTime?
+
+  // Parent/Guardian info (for students under 18)
+  parentName  String?
+  parentPhone String?
+  parentEmail String?
+
   enrollments Enrollment[]
   payments    Payment[]
 

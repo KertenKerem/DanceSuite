@@ -126,16 +126,18 @@ const PaymentManagement = () => {
         </tbody>
       </table>
 
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
-          <PaymentForm
-            payment={editingPayment}
-            users={users}
-            onSave={handleSave}
-            onCancel={() => setShowModal(false)}
-          />
-        </Modal>
-      )}
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingPayment ? 'Update Payment' : 'Create Payment'}
+      >
+        <PaymentForm
+          payment={editingPayment}
+          users={users}
+          onSave={handleSave}
+          onCancel={() => setShowModal(false)}
+        />
+      </Modal>
     </div>
   );
 };
