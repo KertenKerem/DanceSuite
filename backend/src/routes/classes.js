@@ -57,14 +57,14 @@ router.get('/:id', async (req, res) => {
 // Create class (Admin/Instructor only)
 router.post('/', authenticate, authorize('ADMIN', 'INSTRUCTOR'), async (req, res) => {
   try {
-    const { name, description, maxCapacity, schedules } = req.body;
+    const { name, description, maxCapacity, schedules, instructorId } = req.body;
 
     const classData = await prisma.class.create({
       data: {
         name,
         description,
         maxCapacity,
-        instructorId: req.user.userId,
+        instructorId: instructorId || req.user.userId,
         schedules: {
           create: schedules || []
         }
@@ -83,11 +83,31 @@ router.post('/', authenticate, authorize('ADMIN', 'INSTRUCTOR'), async (req, res
 // Update class (Admin/Instructor only)
 router.put('/:id', authenticate, authorize('ADMIN', 'INSTRUCTOR'), async (req, res) => {
   try {
-    const { name, description, maxCapacity } = req.body;
+    const { name, description, maxCapacity, instructorId, schedules } = req.body;
+
+    // Delete existing schedules and recreate them
+    if (schedules) {
+      await prisma.schedule.deleteMany({
+        where: { classId: req.params.id }
+      });
+    }
 
     const classData = await prisma.class.update({
       where: { id: req.params.id },
-      data: { name, description, maxCapacity }
+      data: {
+        name,
+        description,
+        maxCapacity,
+        instructorId,
+        ...(schedules && {
+          schedules: {
+            create: schedules
+          }
+        })
+      },
+      include: {
+        schedules: true
+      }
     });
 
     res.json(classData);

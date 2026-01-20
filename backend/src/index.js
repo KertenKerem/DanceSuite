@@ -6,6 +6,9 @@ import userRoutes from './routes/users.js';
 import classRoutes from './routes/classes.js';
 import enrollmentRoutes from './routes/enrollments.js';
 import paymentRoutes from './routes/payments.js';
+import attendanceRoutes from './routes/attendance.js';
+import reportRoutes from './routes/reports.js';
+import accountingRoutes from './routes/accounting.js';
 
 dotenv.config();
 
@@ -23,6 +26,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/classes', classRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/accounting', accountingRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

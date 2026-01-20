@@ -39,7 +39,12 @@ export const authAPI = {
 // User API
 export const userAPI = {
   getProfile: () => api.get('/users/me'),
-  updateProfile: (data) => api.put('/users/me', data)
+  updateProfile: (data) => api.put('/users/me', data),
+  getAll: (role) => api.get('/users', { params: role ? { role } : {} }),
+  getById: (id) => api.get(`/users/${id}`),
+  create: (data) => api.post('/users', data),
+  update: (id, data) => api.put(`/users/${id}`, data),
+  delete: (id) => api.delete(`/users/${id}`)
 };
 
 // Classes API
@@ -64,6 +69,32 @@ export const paymentAPI = {
   getAll: () => api.get('/payments'),
   create: (data) => api.post('/payments', data),
   update: (id, data) => api.put(`/payments/${id}`, data)
+};
+
+// Attendance API
+export const attendanceAPI = {
+  getByClass: (classId, date) => api.get(`/attendance/class/${classId}`, { params: { date } }),
+  mark: (data) => api.post('/attendance', data),
+  update: (id, data) => api.put(`/attendance/${id}`, data),
+  getStudentHistory: (userId) => api.get(`/attendance/student/${userId}`)
+};
+
+// Reports API
+export const reportAPI = {
+  getEnrollmentStats: () => api.get('/reports/enrollment-stats'),
+  getRevenue: (startDate, endDate) => api.get('/reports/revenue', { params: { startDate, endDate } }),
+  getAttendanceSummary: (classId, startDate, endDate) => api.get('/reports/attendance-summary', { params: { classId, startDate, endDate } }),
+  getStudentProgress: (userId) => api.get(`/reports/student-progress/${userId}`)
+};
+
+// Accounting API
+export const accountingAPI = {
+  getExpenses: (params) => api.get('/accounting/expenses', { params }),
+  createExpense: (data) => api.post('/accounting/expenses', data),
+  updateExpense: (id, data) => api.put(`/accounting/expenses/${id}`, data),
+  deleteExpense: (id) => api.delete(`/accounting/expenses/${id}`),
+  getSummary: (startDate, endDate) => api.get('/accounting/summary', { params: { startDate, endDate } }),
+  getMonthly: (year) => api.get('/accounting/monthly', { params: { year } })
 };
 
 export default api;
