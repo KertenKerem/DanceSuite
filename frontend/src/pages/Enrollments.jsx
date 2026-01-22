@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { enrollmentAPI } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 const Enrollments = () => {
+  const { t } = useLanguage();
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -22,31 +24,36 @@ const Enrollments = () => {
   };
 
   const handleCancel = async (id) => {
-    if (!window.confirm('Are you sure you want to cancel this enrollment?')) {
+    if (!window.confirm(t('enrollments.cancelConfirm'))) {
       return;
     }
 
     try {
       await enrollmentAPI.cancel(id);
-      setMessage({ type: 'success', text: 'Enrollment cancelled successfully!' });
+      setMessage({ type: 'success', text: t('success.deleted') });
       fetchEnrollments();
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (error) {
       setMessage({
         type: 'error',
-        text: error.response?.data?.error || 'Failed to cancel enrollment'
+        text: error.response?.data?.error || t('errors.general')
       });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     }
   };
 
+  const getDayName = (day) => {
+    const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    return t(`classes.days.${dayKeys[day]}`) || day;
+  };
+
   if (loading) {
-    return <div className="page">Loading...</div>;
+    return <div className="page">{t('common.loading')}</div>;
   }
 
   return (
     <div className="page">
-      <h1>My Enrollments</h1>
+      <h1>{t('enrollments.title')}</h1>
       {message.text && (
         <div className={`${message.type}-message`}>{message.text}</div>
       )}
@@ -55,14 +62,14 @@ const Enrollments = () => {
           {enrollments.map((enrollment) => (
             <div key={enrollment.id} className="card">
               <h3>{enrollment.class.name}</h3>
-              <p><strong>Status:</strong> <span className="status">{enrollment.status}</span></p>
+              <p><strong>{t('common.status')}:</strong> <span className="status">{enrollment.status}</span></p>
               {enrollment.class.schedules.length > 0 && (
                 <div>
-                  <strong>Schedule:</strong>
+                  <strong>{t('classes.schedule')}:</strong>
                   <ul>
                     {enrollment.class.schedules.map((schedule) => (
                       <li key={schedule.id}>
-                        Day {schedule.dayOfWeek}: {schedule.startTime} - {schedule.endTime}
+                        {getDayName(schedule.dayOfWeek)}: {schedule.startTime} - {schedule.endTime}
                       </li>
                     ))}
                   </ul>
@@ -72,13 +79,13 @@ const Enrollments = () => {
                 className="btn-danger"
                 onClick={() => handleCancel(enrollment.id)}
               >
-                Cancel Enrollment
+                {t('enrollments.cancelEnrollment')}
               </button>
             </div>
           ))}
         </div>
       ) : (
-        <p className="empty-state">You are not enrolled in any classes yet.</p>
+        <p className="empty-state">{t('enrollments.noEnrollments')}</p>
       )}
     </div>
   );

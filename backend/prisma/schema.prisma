@@ -31,8 +31,10 @@ model User {
   parentPhone String?
   parentEmail String?
 
-  enrollments Enrollment[]
-  payments    Payment[]
+  enrollments       Enrollment[]
+  payments          Payment[]
+  instructorClasses Class[]                  @relation("ClassInstructor")
+  paymentConfig     InstructorPaymentConfig?
 
   @@map("users")
 }
@@ -44,30 +46,46 @@ enum Role {
 }
 
 model Class {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
+  id           String          @id @default(uuid())
+  name         String
+  description  String?
+  branchId     String?
   instructorId String?
-  maxCapacity Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  maxCapacity  Int
+  fee          Float?
+  recurrence   ClassRecurrence @default(WEEKLY)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
+  branch      Branch?    @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  instructor  User?      @relation("ClassInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
   schedules   Schedule[]
   enrollments Enrollment[]
 
   @@map("classes")
 }
 
+enum ClassRecurrence {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  BIANNUAL
+  YEARLY
+}
+
 model Schedule {
   id        String   @id @default(uuid())
   classId   String
+  saloonId  String?
   dayOfWeek Int      // 0 = Sunday, 6 = Saturday
   startTime String   // Format: "HH:MM"
   endTime   String   // Format: "HH:MM"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  class  Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  saloon Saloon? @relation(fields: [saloonId], references: [id], onDelete: SetNull)
 
   @@map("schedules")
 }
@@ -162,4 +180,61 @@ enum ExpenseCategory {
   MAINTENANCE
   INSURANCE
   OTHER
+}
+
+// ============= BRANCH & SALOON MANAGEMENT =============
+
+model Branch {
+  id             String   @id @default(uuid())
+  name           String
+  address        String?
+  phone          String?
+  isActive       Boolean  @default(true)
+  operatingStart String   @default("09:00")
+  operatingEnd   String   @default("23:00")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  saloons Saloon[]
+  classes Class[]
+
+  @@map("branches")
+}
+
+model Saloon {
+  id        String   @id @default(uuid())
+  branchId  String
+  name      String
+  capacity  Int?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branch    Branch     @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+
+  @@map("saloons")
+}
+
+// ============= INSTRUCTOR PAYMENT CONFIGURATION =============
+
+model InstructorPaymentConfig {
+  id             String                @id @default(uuid())
+  instructorId   String                @unique
+  paymentType    InstructorPaymentType
+  monthlySalary  Float?
+  perLessonRate  Float?
+  percentageRate Float?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  instructor User @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+
+  @@map("instructor_payment_configs")
+}
+
+enum InstructorPaymentType {
+  MONTHLY_SALARY
+  PER_LESSON
+  PERCENTAGE
 }

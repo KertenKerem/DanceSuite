@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { attendanceAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import './AttendanceHistory.css';
 
 const AttendanceHistory = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -18,7 +20,7 @@ const AttendanceHistory = () => {
       const response = await attendanceAPI.getStudentHistory(user.id);
       setAttendance(response.data);
     } catch (err) {
-      setError('Failed to load attendance history');
+      setError(t('errors.general'));
     } finally {
       setLoading(false);
     }
@@ -34,50 +36,60 @@ const AttendanceHistory = () => {
     }
   };
 
+  const getStatusText = (status) => {
+    const statusKeys = {
+      PRESENT: 'attendance.present',
+      ABSENT: 'attendance.absent',
+      LATE: 'attendance.late',
+      EXCUSED: 'attendance.excused'
+    };
+    return t(statusKeys[status]) || status;
+  };
+
   const calculateAttendanceRate = () => {
     if (attendance.length === 0) return 0;
     const present = attendance.filter(a => a.status === 'PRESENT' || a.status === 'LATE').length;
     return Math.round((present / attendance.length) * 100);
   };
 
-  if (loading) return <div className="loading">Loading attendance...</div>;
+  if (loading) return <div className="loading">{t('common.loading')}</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="attendance-history">
-      <h1>My Attendance History</h1>
+      <h1>{t('attendance.historyTitle')}</h1>
 
       <div className="attendance-summary">
         <div className="summary-card">
-          <h3>Attendance Rate</h3>
+          <h3>{t('attendance.attendanceRate')}</h3>
           <p className="rate">{calculateAttendanceRate()}%</p>
         </div>
         <div className="summary-card">
-          <h3>Total Sessions</h3>
+          <h3>{t('attendance.totalClasses')}</h3>
           <p className="count">{attendance.length}</p>
         </div>
       </div>
 
       {attendance.length === 0 ? (
-        <p className="no-data">No attendance records found.</p>
+        <p className="no-data">{t('attendance.noRecords')}</p>
       ) : (
         <table className="attendance-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Class</th>
-              <th>Status</th>
-              <th>Notes</th>
+              <th>{t('common.date')}</th>
+              <th>{t('nav.classes')}</th>
+              <th>{t('common.status')}</th>
+              <th>{t('attendance.notes')}</th>
             </tr>
           </thead>
           <tbody>
             {attendance.map((record) => (
               <tr key={record.id}>
                 <td>{new Date(record.date).toLocaleDateString()}</td>
-                <td>{record.enrollment?.class?.name || 'N/A'}</td>
+                <td>{record.enrollment?.class?.name || '-'}</td>
                 <td>
                   <span className={`status-badge ${getStatusColor(record.status)}`}>
-                    {record.status}
+                    {getStatusText(record.status)}
                   </span>
                 </td>
                 <td>{record.notes || '-'}</td>

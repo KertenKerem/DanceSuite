@@ -1,0 +1,208 @@
+.branch-management {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.branches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.branch-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.branch-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.branch-header:hover {
+  background-color: #f8f9fa;
+}
+
+.branch-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+}
+
+.branch-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  color: #7f8c8d;
+  font-size: 0.875rem;
+}
+
+.branch-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.stat {
+  background: #ecf0f1;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #2c3e50;
+}
+
+.expand-icon {
+  transition: transform 0.2s;
+  color: #7f8c8d;
+  font-size: 0.75rem;
+}
+
+.expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.branch-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+/* Saloons Section */
+.saloons-section {
+  padding: 1.25rem;
+  background: #f8f9fa;
+}
+
+.saloons-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.saloons-header h4 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.saloons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.saloon-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saloon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.saloon-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.saloon-capacity {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.saloon-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.no-saloons {
+  color: #7f8c8d;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Form Styles */
+.branch-form,
+.saloon-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.branch-context {
+  background: #e8f4fd;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.form-section h4 {
+  margin: 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  border-bottom: 1px solid #ecf0f1;
+  padding-bottom: 0.5rem;
+}
+
+/* Button sizes */
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn-xs.btn-edit {
+  background: #3498db;
+  color: white;
+}
+
+.btn-xs.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-xs:hover {
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .branch-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .branch-stats {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .saloons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+}

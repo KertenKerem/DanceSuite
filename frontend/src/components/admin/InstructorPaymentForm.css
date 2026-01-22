@@ -1,0 +1,109 @@
+.instructor-payment-form {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  border: 1px solid #e0e0e0;
+}
+
+.instructor-payment-form h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.loading-small {
+  padding: 0.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.error-message.small {
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.payment-type-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.radio-label:hover {
+  background: #ecf0f1;
+}
+
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #27ae60;
+}
+
+.radio-label span {
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.payment-amount-input {
+  margin-bottom: 1rem;
+}
+
+.payment-amount-input .form-group {
+  margin-bottom: 0;
+}
+
+.payment-amount-input label {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-bottom: 0.25rem;
+}
+
+.payment-amount-input input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 100%;
+  max-width: 200px;
+}
+
+.percentage-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.percentage-input input {
+  width: 100px;
+}
+
+.percentage-symbol {
+  color: #7f8c8d;
+  font-weight: 600;
+}
+
+.hint {
+  display: block;
+  margin-top: 0.25rem;
+  color: #95a5a6;
+  font-size: 0.75rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}

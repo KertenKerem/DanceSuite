@@ -62,9 +62,11 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
             <div className="nav-section">
               <span className="nav-section-title">{t('nav.management')}</span>
               <Link to="/admin/classes">{t('nav.manageClasses')}</Link>
+              <Link to="/admin/calendar">{t('nav.calendar')}</Link>
               <Link to="/admin/attendance">{t('nav.takeAttendance')}</Link>
               {isAdmin && (
                 <>
+                  <Link to="/admin/branches">{t('nav.branches')}</Link>
                   <Link to="/admin/users">{t('nav.manageUsers')}</Link>
                   <Link to="/admin/payments">{t('nav.managePayments')}</Link>
                   <Link to="/admin/accounting">{t('nav.accounting')}</Link>

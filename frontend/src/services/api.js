@@ -97,4 +97,44 @@ export const accountingAPI = {
   getMonthly: (year) => api.get('/accounting/monthly', { params: { year } })
 };
 
+// Branch API
+export const branchAPI = {
+  getAll: () => api.get('/branches'),
+  getById: (id) => api.get(`/branches/${id}`),
+  create: (data) => api.post('/branches', data),
+  update: (id, data) => api.put(`/branches/${id}`, data),
+  delete: (id) => api.delete(`/branches/${id}`)
+};
+
+// Saloon API
+export const saloonAPI = {
+  getAll: (branchId) => api.get('/saloons', { params: branchId ? { branchId } : {} }),
+  getByBranch: (branchId) => api.get(`/saloons/branch/${branchId}`),
+  getById: (id) => api.get(`/saloons/${id}`),
+  create: (data) => api.post('/saloons', data),
+  update: (id, data) => api.put(`/saloons/${id}`, data),
+  delete: (id) => api.delete(`/saloons/${id}`)
+};
+
+// Instructor Payment API
+export const instructorPaymentAPI = {
+  getAll: () => api.get('/instructor-payments'),
+  getByInstructor: (instructorId) => api.get(`/instructor-payments/${instructorId}`),
+  save: (data) => api.post('/instructor-payments', data),
+  update: (instructorId, data) => api.put(`/instructor-payments/${instructorId}`, data),
+  delete: (instructorId) => api.delete(`/instructor-payments/${instructorId}`),
+  calculate: (instructorId, startDate, endDate) => api.get(`/instructor-payments/calculate/${instructorId}`, { params: { startDate, endDate } })
+};
+
+// Calendar API
+export const calendarAPI = {
+  getWeekly: (branchId) => api.get('/calendar/weekly', { params: branchId ? { branchId } : {} }),
+  getWeeklyByBranch: (branchId) => api.get(`/calendar/weekly/${branchId}`)
+};
+
+// Schedule Validation API (part of classes)
+export const scheduleAPI = {
+  validateSchedule: (data) => api.post('/classes/validate-schedule', data)
+};
+
 export default api;

@@ -2,6 +2,7 @@ export default {
   common: {
     loading: 'Yükleniyor...',
     save: 'Kaydet',
+    saving: 'Kaydediliyor...',
     cancel: 'İptal',
     delete: 'Sil',
     edit: 'Düzenle',
@@ -59,7 +60,9 @@ export default {
     progress: 'Gelişimim',
     management: 'Yönetim',
     manageClasses: 'Ders Yönetimi',
+    calendar: 'Haftalık Takvim',
     takeAttendance: 'Yoklama Al',
+    branches: 'Şubeler',
     manageUsers: 'Kullanıcı Yönetimi',
     managePayments: 'Ödeme Yönetimi',
     accounting: 'Muhasebe',
@@ -118,6 +121,7 @@ export default {
     description: 'Açıklama',
     instructor: 'Eğitmen',
     selectInstructor: 'Eğitmen Seç',
+    selectClass: 'Bir Ders Seçin',
     capacity: 'Maksimum Kapasite',
     enrolled: 'Kayıtlı',
     schedule: 'Program',
@@ -133,6 +137,20 @@ export default {
     full: 'Dolu',
     available: 'Müsait',
     spotsLeft: 'yer kaldı',
+    noClasses: 'Ders bulunamadı',
+    attendees: 'Katılımcılar',
+    students: 'öğrenci',
+    noAttendees: 'Bu derste kayıtlı öğrenci yok',
+    fee: 'Ders Ücreti',
+    recurrence: 'Sıklık',
+    recurrences: {
+      weekly: 'Haftalık',
+      biweekly: 'İki Haftada Bir',
+      monthly: 'Aylık',
+      quarterly: '3 Ayda Bir',
+      biannual: '6 Ayda Bir',
+      yearly: 'Yıllık'
+    },
     days: {
       sunday: 'Pazar',
       monday: 'Pazartesi',
@@ -180,12 +198,16 @@ export default {
     selectClass: 'Ders Seç',
     selectDate: 'Tarih Seç',
     markAttendance: 'Yoklama İşaretle',
+    markAllPresent: 'Hepsini Var İşaretle',
+    markAllAbsent: 'Hepsini Yok İşaretle',
+    saveAttendance: 'Yoklamayı Kaydet',
     present: 'Var',
     absent: 'Yok',
     late: 'Geç',
     excused: 'İzinli',
     notes: 'Notlar',
     noRecords: 'Devamsızlık kaydı bulunamadı',
+    noStudents: 'Bu derste kayıtlı öğrenci yok',
     attendanceRate: 'Devam Oranı',
     totalClasses: 'Toplam Ders',
     attended: 'Katılım'
@@ -196,7 +218,11 @@ export default {
     overview: 'Genel Bakış',
     attendanceHistory: 'Devamsızlık Geçmişi',
     achievements: 'Başarılar',
-    noProgress: 'Gelişim verisi bulunamadı'
+    noProgress: 'Gelişim verisi bulunamadı',
+    enrolledClasses: 'Kayıtlı Dersler',
+    activeEnrollments: 'Aktif Kayıtlar',
+    completed: 'Tamamlanan',
+    myClasses: 'Derslerim'
   },
 
   accounting: {
@@ -210,9 +236,11 @@ export default {
     netIncome: 'Net Gelir',
     pendingPayments: 'Bekleyen Ödemeler',
     expensesByCategory: 'Kategoriye Göre Giderler',
-    monthlyBreakdown: 'Aylık Dokum',
+    monthlyBreakdown: 'Aylık Dökum',
+    month: 'Ay',
+    revenue: 'Gelir',
     category: 'Kategori',
-    vendor: 'Tedarikci',
+    vendor: 'Tedarikçi',
     deleteConfirm: 'Bu gideri silmek istediğinizden emin misiniz?',
     noExpenses: 'Gider kaydı bulunamadı',
     categories: {
@@ -238,7 +266,64 @@ export default {
     startDate: 'Başlangıç Tarihi',
     endDate: 'Bitiş Tarihi',
     exportPDF: 'PDF İndir',
-    exportCSV: 'CSV İndir'
+    exportCSV: 'CSV İndir',
+    totalStudents: 'Toplam Öğrenci',
+    totalClasses: 'Toplam Ders',
+    activeEnrollments: 'Aktif Kayıtlar',
+    totalRevenue: 'Toplam Gelir',
+    enrollmentByClass: 'Derse Göre Kayıtlar',
+    revenueByStatus: 'Duruma Göre Gelir',
+    noData: 'Veri bulunamadı'
+  },
+
+  branches: {
+    title: 'Şubeler',
+    addBranch: 'Şube Ekle',
+    editBranch: 'Şube Düzenle',
+    branchName: 'Şube Adı',
+    address: 'Adres',
+    operatingHours: 'Çalışma Saatleri',
+    selectBranch: 'Şube Seç',
+    allBranches: 'Tüm Şubeler',
+    deleteConfirm: 'Bu şubeyi silmek istediğinizden emin misiniz?',
+    noBranches: 'Şube bulunamadı'
+  },
+
+  saloons: {
+    title: 'Salonlar',
+    addSaloon: 'Salon Ekle',
+    editSaloon: 'Salon Düzenle',
+    saloonName: 'Salon Adı',
+    capacity: 'Kapasite',
+    selectSaloon: 'Salon Seç',
+    noSaloons: 'Bu şubede salon yok',
+    deleteConfirm: 'Bu salonu silmek istediğinizden emin misiniz?'
+  },
+
+  instructorPayment: {
+    title: 'Ödeme Yapılandırması',
+    paymentType: 'Ödeme Tipi',
+    monthlySalary: 'Aylık Maaş',
+    perLesson: 'Ders Başına',
+    percentage: 'Ders Ücretinin Yüzdesi',
+    amount: 'Tutar',
+    rate: 'Oran',
+    percentageRate: 'Yüzde (%)',
+    noConfig: 'Ödeme yapılandırması ayarlanmamış'
+  },
+
+  calendar: {
+    title: 'Haftalık Takvim',
+    weeklyView: 'Haftalık Görünüm',
+    noClasses: 'Planlanmış ders yok',
+    timeSlot: 'Zaman Dilimi'
+  },
+
+  scheduling: {
+    conflict: 'Zamanlama Çatışması',
+    instructorBusy: 'Eğitmen bu saatte başka bir derste',
+    saloonBusy: 'Salon bu saatte dolu',
+    noConflicts: 'Zamanlama çatışması yok'
   },
 
   errors: {

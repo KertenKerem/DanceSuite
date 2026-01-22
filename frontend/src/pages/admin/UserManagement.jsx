@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { userAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
+import InstructorPaymentForm from '../../components/admin/InstructorPaymentForm';
 import './UserManagement.css';
 
 const UserManagement = () => {
@@ -377,6 +378,10 @@ const UserManagement = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {formData.role === 'INSTRUCTOR' && editingUser && (
+            <InstructorPaymentForm instructorId={editingUser.id} />
           )}
 
           <div className="form-actions">

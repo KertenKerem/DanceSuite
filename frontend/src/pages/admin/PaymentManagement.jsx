@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { paymentAPI, userAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
 import PaymentForm from '../../components/admin/PaymentForm';
 import './PaymentManagement.css';
 
 const PaymentManagement = () => {
+  const { t } = useLanguage();
   const [payments, setPayments] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ const PaymentManagement = () => {
       setPayments(paymentsRes.data);
       setUsers(usersRes.data);
     } catch (err) {
-      setError('Failed to load data');
+      setError(t('errors.general'));
     } finally {
       setLoading(false);
     }
@@ -52,7 +54,7 @@ const PaymentManagement = () => {
       setShowModal(false);
       fetchData();
     } catch (err) {
-      alert(err.response?.data?.error || 'Failed to save payment');
+      alert(err.response?.data?.error || t('errors.general'));
     }
   };
 
@@ -66,42 +68,52 @@ const PaymentManagement = () => {
     }
   };
 
+  const getStatusText = (status) => {
+    const statusKeys = {
+      PENDING: 'payments.pending',
+      COMPLETED: 'payments.completed',
+      FAILED: 'payments.failed',
+      REFUNDED: 'payments.refunded'
+    };
+    return t(statusKeys[status]) || status;
+  };
+
   const filteredPayments = filter === 'ALL'
     ? payments
     : payments.filter(p => p.status === filter);
 
-  if (loading) return <div className="loading">Loading payments...</div>;
+  if (loading) return <div className="loading">{t('common.loading')}</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="payment-management">
       <div className="page-header">
-        <h1>Manage Payments</h1>
+        <h1>{t('payments.manageTitle')}</h1>
         <button onClick={handleCreate} className="btn-primary">
-          + Create Payment
+          + {t('payments.addPayment')}
         </button>
       </div>
 
       <div className="filter-bar">
-        <label>Filter by status:</label>
+        <label>{t('common.filter')}:</label>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="ALL">All</option>
-          <option value="PENDING">Pending</option>
-          <option value="COMPLETED">Completed</option>
-          <option value="FAILED">Failed</option>
-          <option value="REFUNDED">Refunded</option>
+          <option value="ALL">{t('common.all')}</option>
+          <option value="PENDING">{t('payments.pending')}</option>
+          <option value="COMPLETED">{t('payments.completed')}</option>
+          <option value="FAILED">{t('payments.failed')}</option>
+          <option value="REFUNDED">{t('payments.refunded')}</option>
         </select>
       </div>
 
       <table className="payments-table">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Student</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{t('common.date')}</th>
+            <th>{t('payments.student')}</th>
+            <th>{t('classes.description')}</th>
+            <th>{t('payments.amount')}</th>
+            <th>{t('common.status')}</th>
+            <th>{t('common.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -113,12 +125,12 @@ const PaymentManagement = () => {
               <td>${payment.amount.toFixed(2)}</td>
               <td>
                 <span className={`status-badge ${getStatusColor(payment.status)}`}>
-                  {payment.status}
+                  {getStatusText(payment.status)}
                 </span>
               </td>
               <td>
                 <button onClick={() => handleEdit(payment)} className="btn-edit">
-                  Update Status
+                  {t('common.edit')}
                 </button>
               </td>
             </tr>
@@ -129,7 +141,7 @@ const PaymentManagement = () => {
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={editingPayment ? 'Update Payment' : 'Create Payment'}
+        title={editingPayment ? t('payments.editPayment') : t('payments.addPayment')}
       >
         <PaymentForm
           payment={editingPayment}

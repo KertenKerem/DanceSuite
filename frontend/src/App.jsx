@@ -16,6 +16,8 @@ import AttendanceTaking from './pages/admin/AttendanceTaking';
 import ReportsDashboard from './pages/admin/ReportsDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import Accounting from './pages/admin/Accounting';
+import BranchManagement from './pages/admin/BranchManagement';
+import WeeklyCalendar from './pages/admin/WeeklyCalendar';
 import PrivateRoute from './components/PrivateRoute';
 import RoleBasedRoute from './components/RoleBasedRoute';
 import Navigation from './components/Navigation';
@@ -73,6 +75,16 @@ function AppContent() {
           <Route path="/admin/reports" element={
             <RoleBasedRoute allowedRoles={['ADMIN']}>
               <ReportsDashboard />
+            </RoleBasedRoute>
+          } />
+          <Route path="/admin/branches" element={
+            <RoleBasedRoute allowedRoles={['ADMIN']}>
+              <BranchManagement />
+            </RoleBasedRoute>
+          } />
+          <Route path="/admin/calendar" element={
+            <RoleBasedRoute allowedRoles={['ADMIN', 'INSTRUCTOR']}>
+              <WeeklyCalendar />
             </RoleBasedRoute>
           } />
 

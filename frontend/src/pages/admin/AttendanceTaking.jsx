@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { classAPI, attendanceAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import './AttendanceTaking.css';
 
 const AttendanceTaking = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -35,7 +37,7 @@ const AttendanceTaking = () => {
         : response.data.filter(c => c.instructorId === user?.id);
       setClasses(filteredClasses);
     } catch (err) {
-      setError('Failed to load classes');
+      setError(t('errors.general'));
     } finally {
       setLoading(false);
     }
@@ -96,28 +98,28 @@ const AttendanceTaking = () => {
           });
         }
       }
-      setSuccess('Attendance saved successfully!');
+      setSuccess(t('success.saved'));
     } catch (err) {
-      setError('Failed to save attendance');
+      setError(t('errors.general'));
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
+  if (loading) return <div className="loading">{t('common.loading')}</div>;
 
   return (
     <div className="attendance-taking">
-      <h1>Take Attendance</h1>
+      <h1>{t('attendance.takeTitle')}</h1>
 
       <div className="attendance-controls">
         <div className="control-group">
-          <label>Select Class:</label>
+          <label>{t('attendance.selectClass')}:</label>
           <select
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
           >
-            <option value="">Choose a class...</option>
+            <option value="">{t('classes.selectClass')}</option>
             {classes.map(c => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -125,7 +127,7 @@ const AttendanceTaking = () => {
         </div>
 
         <div className="control-group">
-          <label>Date:</label>
+          <label>{t('common.date')}:</label>
           <input
             type="date"
             value={selectedDate}
@@ -138,21 +140,21 @@ const AttendanceTaking = () => {
         <>
           <div className="quick-actions">
             <button onClick={() => handleMarkAll('PRESENT')} className="btn-quick">
-              Mark All Present
+              {t('attendance.markAllPresent')}
             </button>
             <button onClick={() => handleMarkAll('ABSENT')} className="btn-quick btn-absent">
-              Mark All Absent
+              {t('attendance.markAllAbsent')}
             </button>
           </div>
 
           <table className="attendance-table">
             <thead>
               <tr>
-                <th>Student</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Late</th>
-                <th>Excused</th>
+                <th>{t('payments.student')}</th>
+                <th>{t('attendance.present')}</th>
+                <th>{t('attendance.absent')}</th>
+                <th>{t('attendance.late')}</th>
+                <th>{t('attendance.excused')}</th>
               </tr>
             </thead>
             <tbody>
@@ -182,13 +184,13 @@ const AttendanceTaking = () => {
             className="btn-save"
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Save Attendance'}
+            {saving ? t('common.saving') : t('attendance.saveAttendance')}
           </button>
         </>
       )}
 
       {selectedClass && students.length === 0 && (
-        <p className="no-data">No students enrolled in this class.</p>
+        <p className="no-data">{t('attendance.noStudents')}</p>
       )}
     </div>
   );

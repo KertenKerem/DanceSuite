@@ -9,6 +9,10 @@ import paymentRoutes from './routes/payments.js';
 import attendanceRoutes from './routes/attendance.js';
 import reportRoutes from './routes/reports.js';
 import accountingRoutes from './routes/accounting.js';
+import branchRoutes from './routes/branches.js';
+import saloonRoutes from './routes/saloons.js';
+import instructorPaymentRoutes from './routes/instructorPayments.js';
+import calendarRoutes from './routes/calendar.js';
 
 dotenv.config();
 
@@ -29,6 +33,10 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/accounting', accountingRoutes);
+app.use('/api/branches', branchRoutes);
+app.use('/api/saloons', saloonRoutes);
+app.use('/api/instructor-payments', instructorPaymentRoutes);
+app.use('/api/calendar', calendarRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

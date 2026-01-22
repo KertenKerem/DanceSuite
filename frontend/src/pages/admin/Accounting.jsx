@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { accountingAPI, paymentAPI } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
 import './Accounting.css';
 
@@ -9,6 +10,7 @@ const EXPENSE_CATEGORIES = [
 ];
 
 const Accounting = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
   const [summary, setSummary] = useState(null);
   const [monthlyData, setMonthlyData] = useState([]);
@@ -48,7 +50,7 @@ const Accounting = () => {
         setPayments(res.data);
       }
     } catch (err) {
-      setError('Failed to fetch data');
+      setError(t('errors.general'));
     } finally {
       setLoading(false);
     }
@@ -67,7 +69,7 @@ const Accounting = () => {
       resetExpenseForm();
       fetchData();
     } catch (err) {
-      setError('Failed to save expense');
+      setError(t('errors.general'));
     }
   };
 
@@ -84,12 +86,12 @@ const Accounting = () => {
   };
 
   const handleDeleteExpense = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this expense?')) return;
+    if (!window.confirm(t('accounting.deleteConfirm'))) return;
     try {
       await accountingAPI.deleteExpense(id);
       fetchData();
     } catch (err) {
-      setError('Failed to delete expense');
+      setError(t('errors.general'));
     }
   };
 
@@ -117,15 +119,15 @@ const Accounting = () => {
   };
 
   const formatCategory = (category) => {
-    return category.charAt(0) + category.slice(1).toLowerCase().replace('_', ' ');
+    return t(`accounting.categories.${category.toLowerCase()}`) || category;
   };
 
-  if (loading && !summary) return <div className="page loading">Loading...</div>;
+  if (loading && !summary) return <div className="page loading">{t('common.loading')}</div>;
 
   return (
     <div className="page">
       <div className="page-header">
-        <h1>Accounting</h1>
+        <h1>{t('accounting.title')}</h1>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -135,19 +137,19 @@ const Accounting = () => {
           className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          Overview
+          {t('accounting.overview')}
         </button>
         <button
           className={`tab ${activeTab === 'expenses' ? 'active' : ''}`}
           onClick={() => setActiveTab('expenses')}
         >
-          Expenses
+          {t('accounting.expenses')}
         </button>
         <button
           className={`tab ${activeTab === 'payments' ? 'active' : ''}`}
           onClick={() => setActiveTab('payments')}
         >
-          Payments
+          {t('nav.payments')}
         </button>
       </div>
 
@@ -155,30 +157,30 @@ const Accounting = () => {
         <div className="overview-content">
           <div className="summary-cards">
             <div className="summary-card revenue">
-              <h3>Total Revenue</h3>
+              <h3>{t('accounting.totalRevenue')}</h3>
               <p className="amount">{formatCurrency(summary.revenue.total)}</p>
-              <span className="count">{summary.revenue.count} payments</span>
+              <span className="count">{summary.revenue.count} {t('nav.payments').toLowerCase()}</span>
             </div>
             <div className="summary-card expenses">
-              <h3>Total Expenses</h3>
+              <h3>{t('accounting.totalExpenses')}</h3>
               <p className="amount">{formatCurrency(summary.expenses.total)}</p>
-              <span className="count">{summary.expenses.count} expenses</span>
+              <span className="count">{summary.expenses.count} {t('accounting.expenses').toLowerCase()}</span>
             </div>
             <div className="summary-card net-income">
-              <h3>Net Income</h3>
+              <h3>{t('accounting.netIncome')}</h3>
               <p className={`amount ${summary.netIncome >= 0 ? 'positive' : 'negative'}`}>
                 {formatCurrency(summary.netIncome)}
               </p>
             </div>
             <div className="summary-card pending">
-              <h3>Pending Payments</h3>
+              <h3>{t('accounting.pendingPayments')}</h3>
               <p className="amount">{formatCurrency(summary.pendingPayments.total)}</p>
-              <span className="count">{summary.pendingPayments.count} pending</span>
+              <span className="count">{summary.pendingPayments.count} {t('payments.pending').toLowerCase()}</span>
             </div>
           </div>
 
           <div className="card">
-            <h2>Expenses by Category</h2>
+            <h2>{t('accounting.expensesByCategory')}</h2>
             <div className="category-breakdown">
               {summary.expenses.byCategory.map((item) => (
                 <div key={item.category} className="category-item">
@@ -198,14 +200,14 @@ const Accounting = () => {
           </div>
 
           <div className="card">
-            <h2>Monthly Breakdown</h2>
+            <h2>{t('accounting.monthlyBreakdown')}</h2>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Month</th>
-                  <th>Revenue</th>
-                  <th>Expenses</th>
-                  <th>Net Income</th>
+                  <th>{t('accounting.month')}</th>
+                  <th>{t('accounting.revenue')}</th>
+                  <th>{t('accounting.expenses')}</th>
+                  <th>{t('accounting.netIncome')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -229,7 +231,7 @@ const Accounting = () => {
         <div className="expenses-content">
           <div className="section-header">
             <button className="btn-primary" onClick={openCreateExpenseModal}>
-              Add Expense
+              {t('accounting.addExpense')}
             </button>
           </div>
 
@@ -237,12 +239,12 @@ const Accounting = () => {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th>Vendor</th>
-                  <th>Amount</th>
-                  <th>Actions</th>
+                  <th>{t('common.date')}</th>
+                  <th>{t('accounting.category')}</th>
+                  <th>{t('classes.description')}</th>
+                  <th>{t('accounting.vendor')}</th>
+                  <th>{t('payments.amount')}</th>
+                  <th>{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,13 +265,13 @@ const Accounting = () => {
                           className="btn-sm btn-edit"
                           onClick={() => handleEditExpense(expense)}
                         >
-                          Edit
+                          {t('common.edit')}
                         </button>
                         <button
                           className="btn-sm btn-delete"
                           onClick={() => handleDeleteExpense(expense.id)}
                         >
-                          Delete
+                          {t('common.delete')}
                         </button>
                       </div>
                     </td>
@@ -278,7 +280,7 @@ const Accounting = () => {
               </tbody>
             </table>
             {expenses.length === 0 && (
-              <p className="no-data">No expenses recorded</p>
+              <p className="no-data">{t('accounting.noExpenses')}</p>
             )}
           </div>
         </div>
@@ -290,11 +292,11 @@ const Accounting = () => {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Student</th>
-                  <th>Description</th>
-                  <th>Amount</th>
-                  <th>Status</th>
+                  <th>{t('common.date')}</th>
+                  <th>{t('payments.student')}</th>
+                  <th>{t('classes.description')}</th>
+                  <th>{t('payments.amount')}</th>
+                  <th>{t('common.status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -318,7 +320,7 @@ const Accounting = () => {
               </tbody>
             </table>
             {payments.length === 0 && (
-              <p className="no-data">No payments recorded</p>
+              <p className="no-data">{t('payments.noPayments')}</p>
             )}
           </div>
         </div>
@@ -327,11 +329,11 @@ const Accounting = () => {
       <Modal
         isOpen={showExpenseModal}
         onClose={() => setShowExpenseModal(false)}
-        title={editingExpense ? 'Edit Expense' : 'Add Expense'}
+        title={editingExpense ? t('accounting.editExpense') : t('accounting.addExpense')}
       >
         <form onSubmit={handleExpenseSubmit} className="expense-form">
           <div className="form-group">
-            <label>Category</label>
+            <label>{t('accounting.category')}</label>
             <select
               value={expenseForm.category}
               onChange={(e) => setExpenseForm({ ...expenseForm, category: e.target.value })}
@@ -344,7 +346,7 @@ const Accounting = () => {
           </div>
 
           <div className="form-group">
-            <label>Amount</label>
+            <label>{t('payments.amount')}</label>
             <input
               type="number"
               step="0.01"
@@ -356,7 +358,7 @@ const Accounting = () => {
           </div>
 
           <div className="form-group">
-            <label>Description</label>
+            <label>{t('classes.description')}</label>
             <input
               type="text"
               value={expenseForm.description}
@@ -366,7 +368,7 @@ const Accounting = () => {
           </div>
 
           <div className="form-group">
-            <label>Date</label>
+            <label>{t('common.date')}</label>
             <input
               type="date"
               value={expenseForm.date}
@@ -376,7 +378,7 @@ const Accounting = () => {
           </div>
 
           <div className="form-group">
-            <label>Vendor (Optional)</label>
+            <label>{t('accounting.vendor')}</label>
             <input
               type="text"
               value={expenseForm.vendor}
@@ -386,10 +388,10 @@ const Accounting = () => {
 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => setShowExpenseModal(false)}>
-              Cancel
+              {t('common.cancel')}
             </button>
             <button type="submit" className="btn-primary">
-              {editingExpense ? 'Update' : 'Add Expense'}
+              {editingExpense ? t('common.update') : t('accounting.addExpense')}
             </button>
           </div>
         </form>

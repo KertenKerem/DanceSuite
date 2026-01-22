@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { reportAPI, enrollmentAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import './StudentProgress.css';
 
 const StudentProgress = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [progress, setProgress] = useState(null);
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,46 +25,46 @@ const StudentProgress = () => {
       setProgress(progressRes.data);
       setEnrollments(enrollmentsRes.data);
     } catch (err) {
-      setError('Failed to load progress data');
+      setError(t('errors.general'));
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading progress...</div>;
+  if (loading) return <div className="loading">{t('common.loading')}</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="student-progress">
-      <h1>My Progress</h1>
+      <h1>{t('progress.title')}</h1>
 
       <div className="progress-cards">
         <div className="progress-card">
-          <h3>Enrolled Classes</h3>
+          <h3>{t('progress.enrolledClasses')}</h3>
           <p className="stat">{enrollments.length}</p>
         </div>
         <div className="progress-card">
-          <h3>Active Enrollments</h3>
+          <h3>{t('progress.activeEnrollments')}</h3>
           <p className="stat">
             {enrollments.filter(e => e.status === 'ACTIVE').length}
           </p>
         </div>
         <div className="progress-card">
-          <h3>Completed</h3>
+          <h3>{t('progress.completed')}</h3>
           <p className="stat">
             {enrollments.filter(e => e.status === 'COMPLETED').length}
           </p>
         </div>
         <div className="progress-card">
-          <h3>Attendance Rate</h3>
+          <h3>{t('attendance.attendanceRate')}</h3>
           <p className="stat">{progress?.attendanceRate || 0}%</p>
         </div>
       </div>
 
       <div className="enrollments-section">
-        <h2>My Classes</h2>
+        <h2>{t('progress.myClasses')}</h2>
         {enrollments.length === 0 ? (
-          <p className="no-data">You are not enrolled in any classes.</p>
+          <p className="no-data">{t('enrollments.noEnrollments')}</p>
         ) : (
           <div className="class-list">
             {enrollments.map((enrollment) => (

@@ -14,6 +14,8 @@ const ClassManagement = () => {
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
+  const [showAttendeesModal, setShowAttendeesModal] = useState(false);
+  const [selectedClassAttendees, setSelectedClassAttendees] = useState(null);
 
   const isAdmin = user?.role === 'ADMIN';
 
@@ -73,9 +75,26 @@ const ClassManagement = () => {
     return isAdmin || classItem.instructorId === user?.id;
   };
 
+  const handleShowAttendees = (classItem) => {
+    setSelectedClassAttendees(classItem);
+    setShowAttendeesModal(true);
+  };
+
   const getDayName = (day) => {
     const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     return t(`classes.days.${dayKeys[day]}`) || day;
+  };
+
+  const getRecurrenceText = (recurrence) => {
+    const recurrenceKeys = {
+      WEEKLY: 'weekly',
+      BIWEEKLY: 'biweekly',
+      MONTHLY: 'monthly',
+      QUARTERLY: 'quarterly',
+      BIANNUAL: 'biannual',
+      YEARLY: 'yearly'
+    };
+    return t(`classes.recurrences.${recurrenceKeys[recurrence]}`) || recurrence;
   };
 
   if (loading) return <div className="loading">{t('common.loading')}</div>;
@@ -94,9 +113,10 @@ const ClassManagement = () => {
         <thead>
           <tr>
             <th>{t('common.name')}</th>
-            <th>{t('classes.description')}</th>
+            <th>{t('classes.instructor')}</th>
+            <th>{t('classes.recurrence')}</th>
             <th>{t('classes.capacity')}</th>
-            <th>{t('classes.enrolled')}</th>
+            <th>{t('classes.attendees')}</th>
             <th>{t('classes.schedule')}</th>
             <th>{t('common.actions')}</th>
           </tr>
@@ -104,10 +124,31 @@ const ClassManagement = () => {
         <tbody>
           {classes.map((classItem) => (
             <tr key={classItem.id}>
-              <td>{classItem.name}</td>
-              <td>{classItem.description?.substring(0, 50)}...</td>
+              <td>
+                <div className="class-name">{classItem.name}</div>
+                {classItem.description && (
+                  <div className="class-description">{classItem.description.substring(0, 50)}...</div>
+                )}
+              </td>
+              <td>
+                {classItem.instructor
+                  ? `${classItem.instructor.firstName} ${classItem.instructor.lastName}`
+                  : '-'}
+              </td>
+              <td>
+                <span className="recurrence-badge">
+                  {getRecurrenceText(classItem.recurrence)}
+                </span>
+              </td>
               <td>{classItem.maxCapacity}</td>
-              <td>{classItem._count?.enrollments || 0}</td>
+              <td>
+                <button
+                  className="btn-attendees"
+                  onClick={() => handleShowAttendees(classItem)}
+                >
+                  {classItem.enrollments?.length || 0} {t('classes.students')}
+                </button>
+              </td>
               <td>
                 {classItem.schedules?.map((s, i) => (
                   <div key={i} className="schedule-item">
@@ -144,6 +185,35 @@ const ClassManagement = () => {
           onSave={handleSave}
           onCancel={() => setShowModal(false)}
         />
+      </Modal>
+
+      <Modal
+        isOpen={showAttendeesModal}
+        onClose={() => setShowAttendeesModal(false)}
+        title={`${selectedClassAttendees?.name} - ${t('classes.attendees')}`}
+      >
+        <div className="attendees-list">
+          {selectedClassAttendees?.enrollments?.length > 0 ? (
+            <table className="attendees-table">
+              <thead>
+                <tr>
+                  <th>{t('common.name')}</th>
+                  <th>{t('common.email')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedClassAttendees.enrollments.map((enrollment) => (
+                  <tr key={enrollment.id}>
+                    <td>{enrollment.user.firstName} {enrollment.user.lastName}</td>
+                    <td>{enrollment.user.email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="no-attendees">{t('classes.noAttendees')}</p>
+          )}
+        </div>
       </Modal>
     </div>
   );

@@ -2,6 +2,7 @@ export default {
   common: {
     loading: 'Loading...',
     save: 'Save',
+    saving: 'Saving...',
     cancel: 'Cancel',
     delete: 'Delete',
     edit: 'Edit',
@@ -59,7 +60,9 @@ export default {
     progress: 'My Progress',
     management: 'Management',
     manageClasses: 'Manage Classes',
+    calendar: 'Weekly Calendar',
     takeAttendance: 'Take Attendance',
+    branches: 'Branches',
     manageUsers: 'Manage Users',
     managePayments: 'Manage Payments',
     accounting: 'Accounting',
@@ -118,6 +121,7 @@ export default {
     description: 'Description',
     instructor: 'Instructor',
     selectInstructor: 'Select Instructor',
+    selectClass: 'Select a Class',
     capacity: 'Max Capacity',
     enrolled: 'Enrolled',
     schedule: 'Schedule',
@@ -133,6 +137,20 @@ export default {
     full: 'Full',
     available: 'Available',
     spotsLeft: 'spots left',
+    noClasses: 'No classes available',
+    attendees: 'Attendees',
+    students: 'students',
+    noAttendees: 'No students enrolled in this class',
+    fee: 'Class Fee',
+    recurrence: 'Frequency',
+    recurrences: {
+      weekly: 'Weekly',
+      biweekly: 'Every 2 Weeks',
+      monthly: 'Monthly',
+      quarterly: 'Every 3 Months',
+      biannual: 'Every 6 Months',
+      yearly: 'Yearly'
+    },
     days: {
       sunday: 'Sunday',
       monday: 'Monday',
@@ -180,12 +198,16 @@ export default {
     selectClass: 'Select Class',
     selectDate: 'Select Date',
     markAttendance: 'Mark Attendance',
+    markAllPresent: 'Mark All Present',
+    markAllAbsent: 'Mark All Absent',
+    saveAttendance: 'Save Attendance',
     present: 'Present',
     absent: 'Absent',
     late: 'Late',
     excused: 'Excused',
     notes: 'Notes',
     noRecords: 'No attendance records found',
+    noStudents: 'No students enrolled in this class',
     attendanceRate: 'Attendance Rate',
     totalClasses: 'Total Classes',
     attended: 'Attended'
@@ -196,7 +218,11 @@ export default {
     overview: 'Overview',
     attendanceHistory: 'Attendance History',
     achievements: 'Achievements',
-    noProgress: 'No progress data available'
+    noProgress: 'No progress data available',
+    enrolledClasses: 'Enrolled Classes',
+    activeEnrollments: 'Active Enrollments',
+    completed: 'Completed',
+    myClasses: 'My Classes'
   },
 
   accounting: {
@@ -211,6 +237,8 @@ export default {
     pendingPayments: 'Pending Payments',
     expensesByCategory: 'Expenses by Category',
     monthlyBreakdown: 'Monthly Breakdown',
+    month: 'Month',
+    revenue: 'Revenue',
     category: 'Category',
     vendor: 'Vendor',
     deleteConfirm: 'Are you sure you want to delete this expense?',
@@ -238,7 +266,64 @@ export default {
     startDate: 'Start Date',
     endDate: 'End Date',
     exportPDF: 'Export PDF',
-    exportCSV: 'Export CSV'
+    exportCSV: 'Export CSV',
+    totalStudents: 'Total Students',
+    totalClasses: 'Total Classes',
+    activeEnrollments: 'Active Enrollments',
+    totalRevenue: 'Total Revenue',
+    enrollmentByClass: 'Enrollment by Class',
+    revenueByStatus: 'Revenue by Status',
+    noData: 'No data available'
+  },
+
+  branches: {
+    title: 'Branches',
+    addBranch: 'Add Branch',
+    editBranch: 'Edit Branch',
+    branchName: 'Branch Name',
+    address: 'Address',
+    operatingHours: 'Operating Hours',
+    selectBranch: 'Select Branch',
+    allBranches: 'All Branches',
+    deleteConfirm: 'Are you sure you want to delete this branch?',
+    noBranches: 'No branches found'
+  },
+
+  saloons: {
+    title: 'Saloons',
+    addSaloon: 'Add Saloon',
+    editSaloon: 'Edit Saloon',
+    saloonName: 'Saloon Name',
+    capacity: 'Capacity',
+    selectSaloon: 'Select Saloon',
+    noSaloons: 'No saloons in this branch',
+    deleteConfirm: 'Are you sure you want to delete this saloon?'
+  },
+
+  instructorPayment: {
+    title: 'Payment Configuration',
+    paymentType: 'Payment Type',
+    monthlySalary: 'Monthly Salary',
+    perLesson: 'Per Lesson',
+    percentage: 'Percentage of Class Fee',
+    amount: 'Amount',
+    rate: 'Rate',
+    percentageRate: 'Percentage (%)',
+    noConfig: 'No payment configuration set'
+  },
+
+  calendar: {
+    title: 'Weekly Calendar',
+    weeklyView: 'Weekly View',
+    noClasses: 'No classes scheduled',
+    timeSlot: 'Time Slot'
+  },
+
+  scheduling: {
+    conflict: 'Scheduling Conflict',
+    instructorBusy: 'Instructor is already teaching at this time',
+    saloonBusy: 'Saloon is already booked at this time',
+    noConflicts: 'No scheduling conflicts'
   },
 
   errors: {
