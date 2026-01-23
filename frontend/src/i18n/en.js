@@ -28,7 +28,8 @@ export default {
     all: 'All',
     none: 'None',
     required: 'Required',
-    optional: 'Optional'
+    optional: 'Optional',
+    today: 'Today'
   },
 
   auth: {

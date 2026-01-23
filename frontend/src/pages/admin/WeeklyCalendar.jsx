@@ -18,7 +18,6 @@ const WeeklyCalendar = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const today = new Date();
     const dayOfWeek = today.getDay();
-    // Calculate Monday (start of week)
     const monday = new Date(today);
     monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
     monday.setHours(0, 0, 0, 0);
@@ -132,31 +131,32 @@ const WeeklyCalendar = () => {
     return slots;
   };
 
-  const getScheduleStyle = (schedule, totalHours, startHour) => {
-    const schedStartHour = parseInt(schedule.startTime.split(':')[0]);
-    const schedStartMinute = parseInt(schedule.startTime.split(':')[1]);
-    const schedEndHour = parseInt(schedule.endTime.split(':')[0]);
-    const schedEndMinute = parseInt(schedule.endTime.split(':')[1]);
-
-    const startPosition = ((schedStartHour - startHour) + schedStartMinute / 60) / totalHours * 100;
-    const duration = ((schedEndHour - schedStartHour) + (schedEndMinute - schedStartMinute) / 60) / totalHours * 100;
-
-    return {
-      top: `${startPosition}%`,
-      height: `${Math.max(duration, 3)}%` // Minimum height for visibility
-    };
-  };
-
-  const getSchedulesForSaloonAndDay = (saloonId, dayIndex) => {
+  const getSchedulesForColumn = (saloonId, dayIndex) => {
     if (!calendarData) return [];
-    return calendarData.schedules.filter(
-      s => s.saloonId === saloonId && s.dayOfWeek === dayIndex
+    return calendarData.schedules.filter(s =>
+      s.saloonId === saloonId && s.dayOfWeek === dayIndex
     );
   };
 
-  const getUnassignedSchedulesForDay = (dayIndex) => {
-    if (!calendarData || !calendarData.unassignedSchedules) return [];
-    return calendarData.unassignedSchedules.filter(s => s.dayOfWeek === dayIndex);
+  // Calculate position and height for a class block
+  const getClassBlockStyle = (schedule) => {
+    const { start: opStart } = getOperatingHours();
+    const [startHour, startMin] = schedule.startTime.split(':').map(Number);
+    const [endHour, endMin] = schedule.endTime.split(':').map(Number);
+
+    // Calculate top position (percentage from start of day)
+    const startMinutes = (startHour - opStart) * 60 + startMin;
+    const endMinutes = (endHour - opStart) * 60 + endMin;
+    const totalMinutes = (23 - opStart) * 60; // Total minutes in operating hours
+
+    const top = (startMinutes / totalMinutes) * 100;
+    const height = ((endMinutes - startMinutes) / totalMinutes) * 100;
+
+    return {
+      top: `${top}%`,
+      height: `${Math.max(height, 3)}%`, // Minimum height for visibility
+      backgroundColor: getClassColor(schedule.class?.id)
+    };
   };
 
   const handleClassClick = (schedule) => {
@@ -169,7 +169,6 @@ const WeeklyCalendar = () => {
       '#3498db', '#e74c3c', '#2ecc71', '#9b59b6',
       '#f39c12', '#1abc9c', '#e91e63', '#00bcd4'
     ];
-    // Use classId to get consistent color for each class
     const hash = classId?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
     return colors[hash % colors.length];
   };
@@ -177,9 +176,9 @@ const WeeklyCalendar = () => {
   if (loading) return <div className="page loading">{t('common.loading')}</div>;
 
   const timeSlots = generateTimeSlots();
-  const { start: startHour, end: endHour } = getOperatingHours();
-  const totalHours = endHour - startHour;
   const weekDates = getWeekDates();
+  const saloons = calendarData?.saloons || [];
+  const saloonCount = saloons.length || 1;
 
   return (
     <div className="page weekly-calendar">
@@ -207,7 +206,7 @@ const WeeklyCalendar = () => {
         <div className="week-info">
           <span className="week-range">{formatWeekRange()}</span>
           <button className="btn-today" onClick={goToToday}>
-            {t('common.date')}
+            {t('common.today')}
           </button>
         </div>
         <button className="btn-nav" onClick={goToNextWeek}>
@@ -217,116 +216,82 @@ const WeeklyCalendar = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      {!calendarData || (calendarData.saloons.length === 0 && (!calendarData.unassignedSchedules || calendarData.unassignedSchedules.length === 0)) ? (
+      {!calendarData || saloons.length === 0 ? (
         <p className="empty-state">{t('calendar.noClasses')}</p>
       ) : (
-        <div className="calendar-container">
-          {/* Day Headers with Dates */}
-          <div className="calendar-day-headers">
+        <div className="calendar-wrapper">
+          {/* Header - Days and Saloons */}
+          <div className="calendar-header">
             <div className="time-column-header"></div>
             {daysOfWeek.map((day, idx) => {
               const date = weekDates[idx];
               const isToday = new Date().toDateString() === date.toDateString();
               return (
-                <div key={day.index} className={`day-header-cell ${isToday ? 'today' : ''}`}>
-                  <span className="day-name">{t(`classes.days.${day.key}`)}</span>
-                  <span className="day-date">{date.getDate()}</span>
+                <div key={day.index} className={`day-column-header ${isToday ? 'today' : ''}`}>
+                  <div className="day-info">
+                    <span className="day-name">{t(`classes.days.${day.key}`)}</span>
+                    <span className="day-date">{date.getDate()}</span>
+                  </div>
+                  <div className="saloon-headers">
+                    {saloons.map(saloon => (
+                      <div key={saloon.id} className="saloon-header">
+                        {saloon.name}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Calendar Body - Each Saloon as a Row */}
+          {/* Body - Time grid and events */}
           <div className="calendar-body">
-            {/* Time Column */}
+            {/* Time column */}
             <div className="time-column">
               {timeSlots.map(time => (
                 <div key={time} className="time-slot">
-                  <span className="time-text">{time}</span>
+                  <span className="time-label">{time}</span>
                 </div>
               ))}
             </div>
 
-            {/* Days Grid */}
-            <div className="days-grid">
-              {calendarData.saloons.map((saloon, saloonIndex) => (
-                <div key={saloon.id} className="saloon-row">
-                  <div className="saloon-header">
-                    <span className="saloon-name">{saloon.name}</span>
-                    {saloon.branchName && (
-                      <span className="saloon-branch">{saloon.branchName}</span>
-                    )}
-                  </div>
-                  <div className="saloon-days">
-                    {daysOfWeek.map((day) => (
-                      <div key={day.index} className="day-column">
-                        {/* Time grid lines */}
-                        <div className="time-grid-lines">
-                          {timeSlots.map((_, i) => (
-                            <div key={i} className="time-line" />
-                          ))}
-                        </div>
-                        {/* Class blocks */}
-                        {getSchedulesForSaloonAndDay(saloon.id, day.index).map((schedule) => (
-                          <div
-                            key={schedule.id}
-                            className="class-block"
-                            style={{
-                              ...getScheduleStyle(schedule, totalHours, startHour),
-                              backgroundColor: getClassColor(schedule.classId)
-                            }}
-                            onClick={() => handleClassClick(schedule)}
-                            title={`${schedule.class.name} - ${schedule.class.instructorName || t('classes.instructor')}`}
-                          >
-                            <span className="class-name">{schedule.class.name}</span>
-                            <span className="class-time">
-                              {schedule.startTime} - {schedule.endTime}
-                            </span>
-                            {schedule.class.instructorName && (
-                              <span className="class-instructor">{schedule.class.instructorName}</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            {/* Day columns */}
+            {daysOfWeek.map((day) => (
+              <div key={day.index} className="day-column">
+                {/* Saloon sub-columns */}
+                {saloons.map(saloon => (
+                  <div key={saloon.id} className="saloon-column">
+                    {/* Hour grid lines */}
+                    <div className="hour-grid">
+                      {timeSlots.map(time => (
+                        <div key={time} className="hour-line"></div>
+                      ))}
+                    </div>
 
-              {/* Unassigned Classes Row */}
-              {calendarData.unassignedSchedules && calendarData.unassignedSchedules.length > 0 && (
-                <div className="saloon-row unassigned">
-                  <div className="saloon-header">
-                    <span className="saloon-name">{t('saloons.noSaloons')}</span>
-                  </div>
-                  <div className="saloon-days">
-                    {daysOfWeek.map((day) => (
-                      <div key={day.index} className="day-column">
-                        <div className="time-grid-lines">
-                          {timeSlots.map((_, i) => (
-                            <div key={i} className="time-line" />
-                          ))}
+                    {/* Class blocks */}
+                    <div className="events-container">
+                      {getSchedulesForColumn(saloon.id, day.index).map(schedule => (
+                        <div
+                          key={schedule.id}
+                          className="class-block"
+                          style={getClassBlockStyle(schedule)}
+                          onClick={() => handleClassClick(schedule)}
+                          title={`${schedule.class.name} - ${schedule.class.instructorName || ''}`}
+                        >
+                          <span className="class-name">{schedule.class.name}</span>
+                          <span className="class-time">
+                            {schedule.startTime} - {schedule.endTime}
+                          </span>
+                          {schedule.class.instructorName && (
+                            <span className="class-instructor">{schedule.class.instructorName}</span>
+                          )}
                         </div>
-                        {getUnassignedSchedulesForDay(day.index).map((schedule) => (
-                          <div
-                            key={schedule.id}
-                            className="class-block unassigned-class"
-                            style={getScheduleStyle(schedule, totalHours, startHour)}
-                            onClick={() => handleClassClick(schedule)}
-                            title={`${schedule.class.name} - ${schedule.class.instructorName || t('classes.instructor')}`}
-                          >
-                            <span className="class-name">{schedule.class.name}</span>
-                            <span className="class-time">
-                              {schedule.startTime} - {schedule.endTime}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -371,12 +336,6 @@ const WeeklyCalendar = () => {
               <span className="detail-label">{t('classes.enrolled')}:</span>
               <span className="detail-value">{selectedClass.class.enrollmentCount} {t('classes.students')}</span>
             </div>
-            {selectedClass.class.recurrence && (
-              <div className="detail-row">
-                <span className="detail-label">{t('classes.recurrence')}:</span>
-                <span className="detail-value">{t(`classes.recurrences.${selectedClass.class.recurrence.toLowerCase()}`)}</span>
-              </div>
-            )}
           </div>
         )}
       </Modal>

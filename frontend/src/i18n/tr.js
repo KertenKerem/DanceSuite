@@ -28,7 +28,8 @@ export default {
     all: 'Tümü',
     none: 'Hiçbiri',
     required: 'Zorunlu',
-    optional: 'İsteğe bağlı'
+    optional: 'İsteğe bağlı',
+    today: 'Bugün'
   },
 
   auth: {
