@@ -76,6 +76,20 @@
   overflow: hidden;
 }
 
+/* Scroll Container - handles horizontal scroll for both header and body */
+.calendar-scroll-container {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+
+/* Calendar Content - ensures header and body have same width */
+.calendar-content {
+  display: flex;
+  flex-direction: column;
+  min-width: max-content;
+}
+
 /* Calendar Header */
 .calendar-header {
   display: flex;
@@ -89,14 +103,17 @@
 .time-column-header {
   width: 60px;
   min-width: 60px;
+  flex-shrink: 0;
   background: #f8f9fa;
-  border-right: 1px solid #ddd;
+  border-right: 2px solid #ddd;
 }
 
 .day-column-header {
   flex: 1;
-  min-width: 100px;
+  min-width: 0;
   border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
 }
 
 .day-column-header:last-child {
@@ -111,9 +128,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.4rem 0.25rem;
   background: #2c3e50;
   color: white;
+  flex-shrink: 0;
 }
 
 .day-column-header.today .day-info {
@@ -138,12 +156,16 @@
 
 .saloon-header {
   flex: 1;
-  padding: 0.3rem;
+  min-width: 0;
+  padding: 0.25rem 0.15rem;
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 500;
   color: #ecf0f1;
   border-right: 1px solid #2c3e50;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .saloon-header:last-child {
@@ -153,9 +175,6 @@
 /* Calendar Body */
 .calendar-body {
   display: flex;
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 70vh;
 }
 
 /* Time Column */
@@ -170,22 +189,21 @@
 .time-slot {
   height: 60px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   border-bottom: 1px solid #ecf0f1;
 }
 
 .time-label {
   font-size: 0.75rem;
-  color: #7f8c8d;
-  font-weight: 500;
-  transform: translateY(-8px);
+  color: #2c3e50;
+  font-weight: 600;
 }
 
 /* Day Column */
 .day-column {
   flex: 1;
-  min-width: 100px;
+  min-width: 0;
   display: flex;
   border-right: 1px solid #ddd;
 }
@@ -198,8 +216,8 @@
 .saloon-column {
   flex: 1;
   position: relative;
-  border-right: 1px solid #ecf0f1;
-  min-width: 60px;
+  border-right: 1px solid #e0e0e0;
+  min-width: 0;
 }
 
 .saloon-column:last-child {
@@ -327,8 +345,8 @@
     flex-direction: column;
   }
 
-  .calendar-body {
-    max-height: 60vh;
+  .calendar-scroll-container {
+    max-height: 65vh;
   }
 
   .day-name {

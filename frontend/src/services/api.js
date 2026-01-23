@@ -40,6 +40,7 @@ export const authAPI = {
 export const userAPI = {
   getProfile: () => api.get('/users/me'),
   updateProfile: (data) => api.put('/users/me', data),
+  changePassword: (data) => api.put('/users/me/password', data),
   getAll: (role) => api.get('/users', { params: role ? { role } : {} }),
   getById: (id) => api.get(`/users/${id}`),
   create: (data) => api.post('/users', data),

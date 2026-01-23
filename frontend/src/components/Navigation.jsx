@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSelector from './LanguageSelector';
@@ -8,6 +8,7 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -18,9 +19,12 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const isActive = (path) => location.pathname === path;
+
   const isAdmin = user?.role === 'ADMIN';
   const isInstructor = user?.role === 'INSTRUCTOR';
-  const isAdminOrInstructor = isAdmin || isInstructor;
+  const isStudent = user?.role === 'STUDENT';
+  const isStaff = isAdmin || isInstructor;
 
   return (
     <>
@@ -33,10 +37,12 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
         </button>
         <div className="top-bar-right">
           <LanguageSelector />
-          <span className="user-info">
-            {user?.firstName} {user?.lastName}
-            <span className="user-role">{user?.role}</span>
-          </span>
+          <Link to="/profile" className="user-info-link">
+            <span className="user-info">
+              {user?.firstName} {user?.lastName}
+              <span className="user-role">{user?.role}</span>
+            </span>
+          </Link>
           <button onClick={handleLogout} className="btn-logout">{t('auth.logout')}</button>
         </div>
       </header>
@@ -44,37 +50,47 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Left Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
-          <Link to="/dashboard" className="nav-brand">DanceSuite</Link>
+          <Link to={isStaff ? "/admin/calendar" : "/dashboard"} className="nav-brand">DanceSuite</Link>
         </div>
 
         <nav className="sidebar-nav">
-          <div className="nav-section">
-            <span className="nav-section-title">Main</span>
-            <Link to="/dashboard">{t('nav.dashboard')}</Link>
-            <Link to="/classes">{t('nav.classes')}</Link>
-            <Link to="/enrollments">{t('nav.enrollments')}</Link>
-            <Link to="/payments">{t('nav.payments')}</Link>
-            <Link to="/attendance">{t('nav.attendance')}</Link>
-            <Link to="/progress">{t('nav.progress')}</Link>
-          </div>
-
-          {isAdminOrInstructor && (
+          {/* Staff: Calendar is the main page */}
+          {isStaff && (
             <div className="nav-section">
               <span className="nav-section-title">{t('nav.management')}</span>
-              <Link to="/admin/classes">{t('nav.manageClasses')}</Link>
-              <Link to="/admin/calendar">{t('nav.calendar')}</Link>
-              <Link to="/admin/attendance">{t('nav.takeAttendance')}</Link>
+              <Link to="/admin/calendar" className={isActive('/admin/calendar') ? 'active' : ''}>{t('nav.calendar')}</Link>
+              <Link to="/admin/classes" className={isActive('/admin/classes') ? 'active' : ''}>{t('nav.manageClasses')}</Link>
+              <Link to="/admin/attendance" className={isActive('/admin/attendance') ? 'active' : ''}>{t('nav.takeAttendance')}</Link>
               {isAdmin && (
                 <>
-                  <Link to="/admin/branches">{t('nav.branches')}</Link>
-                  <Link to="/admin/users">{t('nav.manageUsers')}</Link>
-                  <Link to="/admin/payments">{t('nav.managePayments')}</Link>
-                  <Link to="/admin/accounting">{t('nav.accounting')}</Link>
-                  <Link to="/admin/reports">{t('nav.reports')}</Link>
+                  <Link to="/admin/branches" className={isActive('/admin/branches') ? 'active' : ''}>{t('nav.branches')}</Link>
+                  <Link to="/admin/users" className={isActive('/admin/users') ? 'active' : ''}>{t('nav.manageUsers')}</Link>
+                  <Link to="/admin/payments" className={isActive('/admin/payments') ? 'active' : ''}>{t('nav.managePayments')}</Link>
+                  <Link to="/admin/accounting" className={isActive('/admin/accounting') ? 'active' : ''}>{t('nav.accounting')}</Link>
+                  <Link to="/admin/reports" className={isActive('/admin/reports') ? 'active' : ''}>{t('nav.reports')}</Link>
                 </>
               )}
             </div>
           )}
+
+          {/* Student: Their own views */}
+          {isStudent && (
+            <div className="nav-section">
+              <span className="nav-section-title">Main</span>
+              <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>{t('nav.dashboard')}</Link>
+              <Link to="/classes" className={isActive('/classes') ? 'active' : ''}>{t('nav.classes')}</Link>
+              <Link to="/enrollments" className={isActive('/enrollments') ? 'active' : ''}>{t('nav.enrollments')}</Link>
+              <Link to="/payments" className={isActive('/payments') ? 'active' : ''}>{t('nav.payments')}</Link>
+              <Link to="/attendance" className={isActive('/attendance') ? 'active' : ''}>{t('nav.attendance')}</Link>
+              <Link to="/progress" className={isActive('/progress') ? 'active' : ''}>{t('nav.progress')}</Link>
+            </div>
+          )}
+
+          {/* Profile link for everyone */}
+          <div className="nav-section">
+            <span className="nav-section-title">{t('nav.profile')}</span>
+            <Link to="/profile" className={isActive('/profile') ? 'active' : ''}>{t('profile.title')}</Link>
+          </div>
         </nav>
       </aside>
     </>

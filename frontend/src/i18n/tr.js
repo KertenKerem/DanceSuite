@@ -59,6 +59,7 @@ export default {
     payments: 'Ödemeler',
     attendance: 'Devamsızlık',
     progress: 'Gelişimim',
+    profile: 'Profilim',
     management: 'Yönetim',
     manageClasses: 'Ders Yönetimi',
     calendar: 'Haftalık Takvim',
@@ -92,6 +93,10 @@ export default {
     instructor: 'Eğitmen',
     admin: 'Yönetici',
     role: 'Rol',
+    firstName: 'Ad',
+    lastName: 'Soyad',
+    phone: 'Telefon',
+    address: 'Adres',
     enrollments: 'Kayıtlar',
     joined: 'Katılım',
     age: 'Yaş',
@@ -325,6 +330,22 @@ export default {
     instructorBusy: 'Eğitmen bu saatte başka bir derste',
     saloonBusy: 'Salon bu saatte dolu',
     noConflicts: 'Zamanlama çatışması yok'
+  },
+
+  profile: {
+    title: 'Profilim',
+    personalInfo: 'Kişisel Bilgiler',
+    changePassword: 'Şifre Değiştir',
+    currentPassword: 'Mevcut Şifre',
+    newPassword: 'Yeni Şifre',
+    confirmPassword: 'Yeni Şifre (Tekrar)',
+    changePicture: 'Fotoğraf Değiştir',
+    parentInfo: 'Veli/Vasi Bilgileri',
+    updateSuccess: 'Profil başarıyla güncellendi',
+    passwordChanged: 'Şifre başarıyla değiştirildi',
+    passwordMismatch: 'Şifreler eşleşmiyor',
+    passwordTooShort: 'Şifre en az 6 karakter olmalıdır',
+    pictureUpdated: 'Profil fotoğrafı güncellendi'
   },
 
   errors: {

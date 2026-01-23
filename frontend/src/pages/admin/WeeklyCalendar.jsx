@@ -220,78 +220,82 @@ const WeeklyCalendar = () => {
         <p className="empty-state">{t('calendar.noClasses')}</p>
       ) : (
         <div className="calendar-wrapper">
-          {/* Header - Days and Saloons */}
-          <div className="calendar-header">
-            <div className="time-column-header"></div>
-            {daysOfWeek.map((day, idx) => {
-              const date = weekDates[idx];
-              const isToday = new Date().toDateString() === date.toDateString();
-              return (
-                <div key={day.index} className={`day-column-header ${isToday ? 'today' : ''}`}>
-                  <div className="day-info">
-                    <span className="day-name">{t(`classes.days.${day.key}`)}</span>
-                    <span className="day-date">{date.getDate()}</span>
-                  </div>
-                  <div className="saloon-headers">
+          <div className="calendar-scroll-container">
+            <div className="calendar-content">
+              {/* Header - Days and Saloons */}
+              <div className="calendar-header">
+                <div className="time-column-header"></div>
+                {daysOfWeek.map((day, idx) => {
+                  const date = weekDates[idx];
+                  const isToday = new Date().toDateString() === date.toDateString();
+                  return (
+                    <div key={day.index} className={`day-column-header ${isToday ? 'today' : ''}`}>
+                      <div className="day-info">
+                        <span className="day-name">{t(`classes.days.${day.key}`)}</span>
+                        <span className="day-date">{date.getDate()}</span>
+                      </div>
+                      <div className="saloon-headers">
+                        {saloons.map(saloon => (
+                          <div key={saloon.id} className="saloon-header">
+                            {saloon.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Body - Time grid and events */}
+              <div className="calendar-body">
+                {/* Time column */}
+                <div className="time-column">
+                  {timeSlots.map(time => (
+                    <div key={time} className="time-slot">
+                      <span className="time-label">{time}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Day columns */}
+                {daysOfWeek.map((day) => (
+                  <div key={day.index} className="day-column">
+                    {/* Saloon sub-columns */}
                     {saloons.map(saloon => (
-                      <div key={saloon.id} className="saloon-header">
-                        {saloon.name}
+                      <div key={saloon.id} className="saloon-column">
+                        {/* Hour grid lines */}
+                        <div className="hour-grid">
+                          {timeSlots.map(time => (
+                            <div key={time} className="hour-line"></div>
+                          ))}
+                        </div>
+
+                        {/* Class blocks */}
+                        <div className="events-container">
+                          {getSchedulesForColumn(saloon.id, day.index).map(schedule => (
+                            <div
+                              key={schedule.id}
+                              className="class-block"
+                              style={getClassBlockStyle(schedule)}
+                              onClick={() => handleClassClick(schedule)}
+                              title={`${schedule.class.name} - ${schedule.class.instructorName || ''}`}
+                            >
+                              <span className="class-name">{schedule.class.name}</span>
+                              <span className="class-time">
+                                {schedule.startTime} - {schedule.endTime}
+                              </span>
+                              {schedule.class.instructorName && (
+                                <span className="class-instructor">{schedule.class.instructorName}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Body - Time grid and events */}
-          <div className="calendar-body">
-            {/* Time column */}
-            <div className="time-column">
-              {timeSlots.map(time => (
-                <div key={time} className="time-slot">
-                  <span className="time-label">{time}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Day columns */}
-            {daysOfWeek.map((day) => (
-              <div key={day.index} className="day-column">
-                {/* Saloon sub-columns */}
-                {saloons.map(saloon => (
-                  <div key={saloon.id} className="saloon-column">
-                    {/* Hour grid lines */}
-                    <div className="hour-grid">
-                      {timeSlots.map(time => (
-                        <div key={time} className="hour-line"></div>
-                      ))}
-                    </div>
-
-                    {/* Class blocks */}
-                    <div className="events-container">
-                      {getSchedulesForColumn(saloon.id, day.index).map(schedule => (
-                        <div
-                          key={schedule.id}
-                          className="class-block"
-                          style={getClassBlockStyle(schedule)}
-                          onClick={() => handleClassClick(schedule)}
-                          title={`${schedule.class.name} - ${schedule.class.instructorName || ''}`}
-                        >
-                          <span className="class-name">{schedule.class.name}</span>
-                          <span className="class-time">
-                            {schedule.startTime} - {schedule.endTime}
-                          </span>
-                          {schedule.class.instructorName && (
-                            <span className="class-instructor">{schedule.class.instructorName}</span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       )}

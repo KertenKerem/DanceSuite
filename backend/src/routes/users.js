@@ -6,6 +6,110 @@ import { authenticate, authorize } from '../middleware/auth.js';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// ============= CURRENT USER ROUTES (must be before /:id routes) =============
+
+// Get current user profile
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        phone: true,
+        address: true,
+        birthday: true,
+        profilePicture: true,
+        parentName: true,
+        parentPhone: true,
+        parentEmail: true,
+        createdAt: true
+      }
+    });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+});
+
+// Update user profile
+router.put('/me', authenticate, async (req, res) => {
+  try {
+    const {
+      firstName, lastName, phone, address, birthday,
+      profilePicture, parentName, parentPhone, parentEmail
+    } = req.body;
+
+    const updateData = {};
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (phone !== undefined) updateData.phone = phone;
+    if (address !== undefined) updateData.address = address;
+    if (birthday !== undefined) updateData.birthday = birthday ? new Date(birthday) : null;
+    if (profilePicture !== undefined) updateData.profilePicture = profilePicture;
+    if (parentName !== undefined) updateData.parentName = parentName;
+    if (parentPhone !== undefined) updateData.parentPhone = parentPhone;
+    if (parentEmail !== undefined) updateData.parentEmail = parentEmail;
+
+    const user = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: updateData,
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        phone: true,
+        address: true,
+        birthday: true,
+        profilePicture: true,
+        parentName: true,
+        parentPhone: true,
+        parentEmail: true
+      }
+    });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Change password
+router.put('/me/password', authenticate, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current and new password are required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId }
+    });
+
+    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { password: hashedPassword }
+    });
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+// ============= ADMIN USER MANAGEMENT ROUTES =============
+
 // Get all users (Admin only)
 router.get('/', authenticate, authorize('ADMIN'), async (req, res) => {
   try {
@@ -193,47 +297,6 @@ router.delete('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete user' });
-  }
-});
-
-// Get current user profile
-router.get('/me', authenticate, async (req, res) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.userId },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true
-      }
-    });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch user profile' });
-  }
-});
-
-// Update user profile
-router.put('/me', authenticate, async (req, res) => {
-  try {
-    const { firstName, lastName } = req.body;
-    const user = await prisma.user.update({
-      where: { id: req.user.userId },
-      data: { firstName, lastName },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true
-      }
-    });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 

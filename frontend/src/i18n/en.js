@@ -59,6 +59,7 @@ export default {
     payments: 'Payments',
     attendance: 'Attendance',
     progress: 'My Progress',
+    profile: 'My Profile',
     management: 'Management',
     manageClasses: 'Manage Classes',
     calendar: 'Weekly Calendar',
@@ -92,6 +93,10 @@ export default {
     instructor: 'Instructor',
     admin: 'Admin',
     role: 'Role',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    phone: 'Phone',
+    address: 'Address',
     enrollments: 'Enrollments',
     joined: 'Joined',
     age: 'Age',
@@ -325,6 +330,22 @@ export default {
     instructorBusy: 'Instructor is already teaching at this time',
     saloonBusy: 'Saloon is already booked at this time',
     noConflicts: 'No scheduling conflicts'
+  },
+
+  profile: {
+    title: 'My Profile',
+    personalInfo: 'Personal Information',
+    changePassword: 'Change Password',
+    currentPassword: 'Current Password',
+    newPassword: 'New Password',
+    confirmPassword: 'Confirm New Password',
+    changePicture: 'Change Picture',
+    parentInfo: 'Parent/Guardian Information',
+    updateSuccess: 'Profile updated successfully',
+    passwordChanged: 'Password changed successfully',
+    passwordMismatch: 'Passwords do not match',
+    passwordTooShort: 'Password must be at least 6 characters',
+    pictureUpdated: 'Profile picture updated'
   },
 
   errors: {

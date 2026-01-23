@@ -37,6 +37,15 @@
   gap: 1rem;
 }
 
+.user-info-link {
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.user-info-link:hover {
+  opacity: 0.8;
+}
+
 .user-info {
   display: flex;
   align-items: center;
