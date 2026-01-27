@@ -1,65 +1,73 @@
+/* DanceSuite - Instructor Payment Form Styles */
+/* Uses design system variables from styles/variables.css */
+
 .instructor-payment-form {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-top: 1rem;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-secondary);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-4);
+  border: var(--border-width-thin) solid var(--border-light);
 }
 
 .instructor-payment-form h4 {
-  margin: 0 0 1rem 0;
-  color: #2c3e50;
-  font-size: 1rem;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
+  margin: 0 0 var(--space-4) 0;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  border-bottom: var(--border-width-thin) solid var(--border-light);
+  padding-bottom: var(--space-2);
 }
 
 .loading-small {
-  padding: 0.5rem;
-  color: #7f8c8d;
-  font-size: 0.9rem;
+  padding: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
 }
 
 .error-message.small {
-  padding: 0.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 0.85rem;
+  padding: var(--space-2);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+  background: var(--color-error-100);
+  color: var(--color-error-700);
+  border-radius: var(--radius-md);
 }
 
 .payment-type-selector {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .radio-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 .radio-label:hover {
-  background: #ecf0f1;
+  background: var(--bg-tertiary);
 }
 
 .radio-label input[type="radio"] {
   width: 18px;
   height: 18px;
-  accent-color: #27ae60;
+  accent-color: var(--color-primary-600);
 }
 
 .radio-label span {
-  color: #2c3e50;
-  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-size: var(--text-sm);
 }
 
 .payment-amount-input {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .payment-amount-input .form-group {
@@ -67,24 +75,36 @@
 }
 
 .payment-amount-input label {
-  font-size: 0.85rem;
-  color: #7f8c8d;
-  margin-bottom: 0.25rem;
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-1);
+  display: block;
+  font-weight: var(--font-medium);
 }
 
 .payment-amount-input input {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.9rem;
+  padding: var(--space-2);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
   width: 100%;
   max-width: 200px;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.payment-amount-input input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
 .percentage-input {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .percentage-input input {
@@ -92,18 +112,23 @@
 }
 
 .percentage-symbol {
-  color: #7f8c8d;
-  font-weight: 600;
+  color: var(--text-tertiary);
+  font-weight: var(--font-semibold);
 }
 
 .hint {
   display: block;
-  margin-top: 0.25rem;
-  color: #95a5a6;
-  font-size: 0.75rem;
+  margin-top: var(--space-1);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
 }
 
 .btn-sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: var(--font-medium);
+  transition: all var(--duration-fast) var(--ease-out);
 }

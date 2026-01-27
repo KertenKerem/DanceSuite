@@ -1,66 +1,163 @@
+/* DanceSuite - Auth Page Styles */
+/* Uses design system variables from styles/variables.css */
+
 .auth-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-700) 100%);
+  padding: var(--space-4);
 }
 
 .auth-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  background: var(--bg-primary);
+  padding: var(--space-8);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+  animation: scaleIn var(--duration-normal) var(--ease-out);
 }
 
 .auth-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .auth-card h1 {
   text-align: center;
-  color: #2c3e50;
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
   margin: 0;
 }
 
 .auth-card h2 {
   text-align: center;
-  color: #7f8c8d;
-  font-size: 1.2rem;
-  font-weight: normal;
-  margin-bottom: 2rem;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-8);
 }
 
 .auth-card form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
-.auth-card button {
-  margin-top: 1rem;
+.auth-card .form-group {
+  margin-bottom: 0;
+}
+
+.auth-card .form-group label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.auth-card .form-group input {
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.auth-card .form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.auth-card button[type="submit"] {
+  margin-top: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-card button[type="submit"]:hover {
+  background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.auth-card button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+.auth-card button[type="submit"]:disabled {
+  background: var(--color-neutral-300);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .auth-link {
   text-align: center;
-  margin-top: 1.5rem;
-  color: #7f8c8d;
+  margin-top: var(--space-6);
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
 }
 
 .auth-link a {
-  color: #667eea;
+  color: var(--color-primary-600);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
 .auth-link a:hover {
+  color: var(--color-primary-700);
   text-decoration: underline;
+}
+
+/* Error message */
+.auth-card .error-message {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  border: var(--border-width-thin) solid var(--color-error-200);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+  }
+
+  .auth-card h1 {
+    font-size: var(--text-2xl);
+  }
+
+  .auth-card h2 {
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-6);
+  }
 }

@@ -1,141 +1,170 @@
+/* DanceSuite - Branch Management Styles */
+/* Uses design system variables from styles/variables.css */
+
 .branch-management {
   max-width: 1200px;
   margin: 0 auto;
 }
 
+/* Branches List */
 .branches-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .branch-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
+  border: var(--border-width-thin) solid var(--border-light);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
 }
 
+.branch-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Branch Header */
 .branch-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem;
+  padding: var(--space-5);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 .branch-header:hover {
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
 }
 
 .branch-info h3 {
-  margin: 0 0 0.5rem 0;
-  color: #2c3e50;
-  font-size: 1.25rem;
+  margin: 0 0 var(--space-2) 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
 }
 
 .branch-meta {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-6);
   flex-wrap: wrap;
 }
 
 .meta-item {
-  color: #7f8c8d;
-  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
+/* Branch Stats */
 .branch-stats {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-4);
 }
 
-.stat {
-  background: #ecf0f1;
-  padding: 0.35rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  color: #2c3e50;
+.branch-stats .stat {
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
 }
 
 .expand-icon {
-  transition: transform 0.2s;
-  color: #7f8c8d;
-  font-size: 0.75rem;
+  transition: transform var(--duration-fast) var(--ease-out);
+  color: var(--text-tertiary);
+  font-size: var(--text-xs);
 }
 
 .expand-icon.expanded {
   transform: rotate(180deg);
 }
 
+/* Branch Actions */
 .branch-actions {
   display: flex;
-  gap: 0.5rem;
-  padding: 0 1.25rem 1rem;
-  border-bottom: 1px solid #ecf0f1;
+  gap: var(--space-2);
+  padding: 0 var(--space-5) var(--space-4);
+  border-bottom: var(--border-width-thin) solid var(--border-light);
 }
 
 /* Saloons Section */
 .saloons-section {
-  padding: 1.25rem;
-  background: #f8f9fa;
+  padding: var(--space-5);
+  background: var(--bg-tertiary);
 }
 
 .saloons-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .saloons-header h4 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
 }
 
 .saloons-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
 }
 
 .saloon-card {
-  background: white;
-  padding: 1rem;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-primary);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width-thin) solid var(--border-default);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.saloon-card:hover {
+  border-color: var(--color-primary-300);
+  box-shadow: var(--shadow-sm);
 }
 
 .saloon-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .saloon-name {
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
 }
 
 .saloon-capacity {
-  font-size: 0.8rem;
-  color: #7f8c8d;
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
 }
 
 .saloon-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .no-saloons {
-  color: #7f8c8d;
+  color: var(--text-tertiary);
   font-style: italic;
   margin: 0;
+  padding: var(--space-4);
+  text-align: center;
 }
 
 /* Form Styles */
@@ -143,46 +172,51 @@
 .saloon-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .branch-context {
-  background: #e8f4fd;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
+  background: var(--color-primary-50);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  color: var(--color-primary-700);
+  font-size: var(--text-sm);
+  border: var(--border-width-thin) solid var(--color-primary-200);
 }
 
 .form-section h4 {
-  margin: 0.5rem 0;
-  color: #2c3e50;
-  font-size: 1rem;
-  border-bottom: 1px solid #ecf0f1;
-  padding-bottom: 0.5rem;
+  margin: var(--space-2) 0;
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  border-bottom: var(--border-width-thin) solid var(--border-light);
+  padding-bottom: var(--space-2);
 }
 
-/* Button sizes */
+/* Button Sizes */
 .btn-xs {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
   border: none;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .btn-xs.btn-edit {
-  background: #3498db;
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
   color: white;
 }
 
 .btn-xs.btn-delete {
-  background: #e74c3c;
+  background: linear-gradient(135deg, var(--color-error-500) 0%, var(--color-error-600) 100%);
   color: white;
 }
 
 .btn-xs:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* Responsive */
@@ -190,7 +224,7 @@
   .branch-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .branch-stats {
@@ -204,5 +238,13 @@
 
   .form-row {
     flex-direction: column;
+  }
+
+  .branch-info h3 {
+    font-size: var(--text-lg);
+  }
+
+  .branch-meta {
+    gap: var(--space-4);
   }
 }
