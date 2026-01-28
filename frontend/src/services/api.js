@@ -95,7 +95,8 @@ export const accountingAPI = {
   updateExpense: (id, data) => api.put(`/accounting/expenses/${id}`, data),
   deleteExpense: (id) => api.delete(`/accounting/expenses/${id}`),
   getSummary: (startDate, endDate) => api.get('/accounting/summary', { params: { startDate, endDate } }),
-  getMonthly: (year) => api.get('/accounting/monthly', { params: { year } })
+  getMonthly: (year) => api.get('/accounting/monthly', { params: { year } }),
+  getInstructorIncome: (startDate, endDate) => api.get('/accounting/instructor-income', { params: { startDate, endDate } })
 };
 
 // Branch API
@@ -136,6 +137,25 @@ export const calendarAPI = {
 // Schedule Validation API (part of classes)
 export const scheduleAPI = {
   validateSchedule: (data) => api.post('/classes/validate-schedule', data)
+};
+
+// Settings API
+export const settingsAPI = {
+  getBranding: () => api.get('/settings/branding'),
+  getAll: () => api.get('/settings'),
+  update: (data) => api.put('/settings', data),
+  backup: () => api.get('/settings/backup'),
+  exportUsers: (format = 'json', role) => api.get('/settings/export/users', {
+    params: { format, role: role || undefined },
+    responseType: format === 'csv' ? 'blob' : 'json'
+  }),
+  exportFinancial: (format = 'json', startDate, endDate) => api.get('/settings/export/financial', {
+    params: { format, startDate: startDate || undefined, endDate: endDate || undefined },
+    responseType: format === 'csv' ? 'blob' : 'json'
+  }),
+  exportClasses: (classId) => api.get('/settings/export/classes', {
+    params: { classId: classId || undefined }
+  })
 };
 
 export default api;

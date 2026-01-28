@@ -19,6 +19,7 @@ router.get('/me', authenticate, async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        branchId: true,
         phone: true,
         address: true,
         birthday: true,
@@ -26,7 +27,13 @@ router.get('/me', authenticate, async (req, res) => {
         parentName: true,
         parentPhone: true,
         parentEmail: true,
-        createdAt: true
+        createdAt: true,
+        branch: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
       }
     });
     res.json(user);
@@ -110,11 +117,33 @@ router.put('/me/password', authenticate, async (req, res) => {
 
 // ============= ADMIN USER MANAGEMENT ROUTES =============
 
-// Get all users (Admin only)
-router.get('/', authenticate, authorize('ADMIN'), async (req, res) => {
+// Get all users (Admin and Office Worker)
+router.get('/', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
     const { role } = req.query;
     const where = role ? { role } : {};
+
+    // Office workers can only see students from their branch
+    if (req.user.role === 'OFFICE_WORKER') {
+      const officeWorker = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        select: { branchId: true }
+      });
+
+      if (!officeWorker?.branchId) {
+        return res.status(403).json({ error: 'Office worker must be assigned to a branch' });
+      }
+
+      where.role = 'STUDENT'; // Office workers can only see students
+      where.enrollments = {
+        some: {
+          class: {
+            branchId: officeWorker.branchId
+          }
+        }
+      };
+    }
+
     const users = await prisma.user.findMany({
       where,
       select: {
@@ -123,6 +152,7 @@ router.get('/', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        branchId: true,
         phone: true,
         address: true,
         birthday: true,
@@ -180,14 +210,19 @@ router.get('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
   }
 });
 
-// Create user (Admin only)
-router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
+// Create user (Admin and Office Worker)
+router.post('/', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
     const {
-      email, password, firstName, lastName, role,
+      email, password, firstName, lastName, role, branchId,
       phone, address, birthday,
       parentName, parentPhone, parentEmail
     } = req.body;
+
+    // Office workers can only create students
+    if (req.user.role === 'OFFICE_WORKER' && role !== 'STUDENT') {
+      return res.status(403).json({ error: 'Office workers can only create students' });
+    }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -202,6 +237,7 @@ router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName,
         lastName,
         role: role || 'STUDENT',
+        branchId,
         phone,
         address,
         birthday: birthday ? new Date(birthday) : null,
@@ -215,6 +251,7 @@ router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        branchId: true,
         phone: true,
         address: true,
         birthday: true,
@@ -230,19 +267,29 @@ router.post('/', authenticate, authorize('ADMIN'), async (req, res) => {
   }
 });
 
-// Update user (Admin only)
-router.put('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
+// Update user (Admin and Office Worker)
+router.put('/:id', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
     const {
-      email, password, firstName, lastName, role,
+      email, password, firstName, lastName, role, branchId,
       phone, address, birthday,
       parentName, parentPhone, parentEmail
     } = req.body;
 
+    // Office workers can only update students
+    if (req.user.role === 'OFFICE_WORKER') {
+      const targetUser = await prisma.user.findUnique({
+        where: { id: req.params.id },
+        select: { role: true }
+      });
+      if (!targetUser || targetUser.role !== 'STUDENT') {
+        return res.status(403).json({ error: 'Office workers can only update students' });
+      }
+    }
+
     const updateData = {
       firstName,
       lastName,
-      role,
       phone,
       address,
       birthday: birthday ? new Date(birthday) : null,
@@ -250,6 +297,12 @@ router.put('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
       parentPhone,
       parentEmail
     };
+
+    // Only admins can change roles and branch
+    if (req.user.role === 'ADMIN') {
+      if (role) updateData.role = role;
+      if (branchId !== undefined) updateData.branchId = branchId;
+    }
 
     if (email) {
       const existingUser = await prisma.user.findFirst({
@@ -273,6 +326,7 @@ router.put('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
         firstName: true,
         lastName: true,
         role: true,
+        branchId: true,
         phone: true,
         address: true,
         birthday: true,
@@ -288,9 +342,20 @@ router.put('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
   }
 });
 
-// Delete user (Admin only)
-router.delete('/:id', authenticate, authorize('ADMIN'), async (req, res) => {
+// Delete user (Admin and Office Worker)
+router.delete('/:id', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
+    // Office workers can only delete students
+    if (req.user.role === 'OFFICE_WORKER') {
+      const targetUser = await prisma.user.findUnique({
+        where: { id: req.params.id },
+        select: { role: true }
+      });
+      if (!targetUser || targetUser.role !== 'STUDENT') {
+        return res.status(403).json({ error: 'Office workers can only delete students' });
+      }
+    }
+
     await prisma.user.delete({
       where: { id: req.params.id }
     });

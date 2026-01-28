@@ -60,7 +60,7 @@
 }
 
 /* Stats */
-.stat {
+.dashboard-grid .stat {
   font-family: var(--font-display);
   font-size: var(--text-4xl);
   font-weight: var(--font-bold);
@@ -278,7 +278,7 @@
     min-height: 150px;
   }
 
-  .stat {
+  .dashboard-grid .stat {
     font-size: var(--text-3xl);
   }
 

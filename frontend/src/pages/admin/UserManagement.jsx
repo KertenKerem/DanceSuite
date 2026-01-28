@@ -147,6 +147,7 @@ const UserManagement = () => {
     switch (role) {
       case 'ADMIN': return 'badge-admin';
       case 'INSTRUCTOR': return 'badge-instructor';
+      case 'OFFICE_WORKER': return 'badge-office-worker';
       default: return 'badge-student';
     }
   };
@@ -179,6 +180,7 @@ const UserManagement = () => {
           <option value="">{t('users.allRoles')}</option>
           <option value="STUDENT">{t('users.students')}</option>
           <option value="INSTRUCTOR">{t('users.instructors')}</option>
+          <option value="OFFICE_WORKER">{t('users.officeWorkers')}</option>
           <option value="ADMIN">{t('users.admins')}</option>
         </select>
       </div>
@@ -294,6 +296,7 @@ const UserManagement = () => {
               >
                 <option value="STUDENT">{t('users.student')}</option>
                 <option value="INSTRUCTOR">{t('users.instructor')}</option>
+                <option value="OFFICE_WORKER">{t('users.officeWorker')}</option>
                 <option value="ADMIN">{t('users.admin')}</option>
               </select>
             </div>

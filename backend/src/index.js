@@ -13,6 +13,7 @@ import branchRoutes from './routes/branches.js';
 import saloonRoutes from './routes/saloons.js';
 import instructorPaymentRoutes from './routes/instructorPayments.js';
 import calendarRoutes from './routes/calendar.js';
+import settingsRoutes from './routes/settings.js';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use('/api/branches', branchRoutes);
 app.use('/api/saloons', saloonRoutes);
 app.use('/api/instructor-payments', instructorPaymentRoutes);
 app.use('/api/calendar', calendarRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

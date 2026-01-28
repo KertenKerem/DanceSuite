@@ -191,6 +191,19 @@
   color: var(--color-primary-100);
 }
 
+.brand-logo {
+  max-height: 36px;
+  max-width: 80px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.brand-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .nav-brand-icon {
   font-size: var(--text-2xl);
 }

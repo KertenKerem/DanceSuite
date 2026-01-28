@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 import LanguageSelector from '../components/LanguageSelector';
 import './Auth.css';
 
 const Login = () => {
   const { t } = useLanguage();
+  const { branding } = useSettings();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -44,7 +46,9 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>DanceSuite</h1>
+          {branding.logo && <img src={branding.logo} alt={branding.schoolName} className="auth-logo" />}
+          <h1>{branding.schoolName}</h1>
+          {branding.motto && <p className="auth-motto">{branding.motto}</p>}
           <LanguageSelector />
         </div>
         <h2>{t('auth.signIn')}</h2>

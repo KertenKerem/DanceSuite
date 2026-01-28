@@ -16,10 +16,12 @@ const Accounting = () => {
   const [monthlyData, setMonthlyData] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [instructorIncome, setInstructorIncome] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [expandedInstructor, setExpandedInstructor] = useState(null);
   const [expenseForm, setExpenseForm] = useState({
     category: 'OTHER',
     amount: '',
@@ -48,6 +50,9 @@ const Accounting = () => {
       } else if (activeTab === 'payments') {
         const res = await paymentAPI.getAll();
         setPayments(res.data);
+      } else if (activeTab === 'instructors') {
+        const res = await accountingAPI.getInstructorIncome();
+        setInstructorIncome(res.data);
       }
     } catch (err) {
       setError(t('errors.general'));
@@ -138,6 +143,12 @@ const Accounting = () => {
           onClick={() => setActiveTab('overview')}
         >
           {t('accounting.overview')}
+        </button>
+        <button
+          className={`tab ${activeTab === 'instructors' ? 'active' : ''}`}
+          onClick={() => setActiveTab('instructors')}
+        >
+          {t('users.instructors')}
         </button>
         <button
           className={`tab ${activeTab === 'expenses' ? 'active' : ''}`}
@@ -283,6 +294,67 @@ const Accounting = () => {
               <p className="no-data">{t('accounting.noExpenses')}</p>
             )}
           </div>
+        </div>
+      )}
+
+      {activeTab === 'instructors' && (
+        <div className="instructors-content">
+          <div className="instructor-cards">
+            {instructorIncome.map((data) => (
+              <div key={data.instructor.id} className="instructor-card">
+                <div
+                  className="instructor-header"
+                  onClick={() => setExpandedInstructor(
+                    expandedInstructor === data.instructor.id ? null : data.instructor.id
+                  )}
+                >
+                  <div className="instructor-info">
+                    <h3>{data.instructor.name}</h3>
+                    <p className="instructor-email">{data.instructor.email}</p>
+                  </div>
+                  <div className="instructor-stats">
+                    <div className="stat-item">
+                      <span className="stat-label">{t('accounting.totalIncome')}</span>
+                      <span className="stat-value positive">{formatCurrency(data.totalIncome)}</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">{t('classes.classes')}</span>
+                      <span className="stat-value">{data.totalClasses}</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">{t('users.students')}</span>
+                      <span className="stat-value">{data.totalStudents}</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">{t('nav.payments')}</span>
+                      <span className="stat-value">{data.totalPayments}</span>
+                    </div>
+                  </div>
+                  <span className={`expand-icon ${expandedInstructor === data.instructor.id ? 'expanded' : ''}`}>
+                    &#9660;
+                  </span>
+                </div>
+
+                {expandedInstructor === data.instructor.id && (
+                  <div className="instructor-classes">
+                    <h4>{t('classes.classes')}</h4>
+                    <div className="classes-grid">
+                      {data.classes.map((cls) => (
+                        <div key={cls.id} className="class-item">
+                          <span className="class-name">{cls.name}</span>
+                          <span className="class-fee">{formatCurrency(cls.fee)} / {t('classes.student')}</span>
+                          <span className="class-students">{cls.students} {t('users.students')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          {instructorIncome.length === 0 && (
+            <p className="no-data">{t('accounting.noInstructorData')}</p>
+          )}
         </div>
       )}
 

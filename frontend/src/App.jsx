@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { SettingsProvider } from './context/SettingsContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { useState } from 'react';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -19,6 +21,7 @@ import UserManagement from './pages/admin/UserManagement';
 import Accounting from './pages/admin/Accounting';
 import BranchManagement from './pages/admin/BranchManagement';
 import WeeklyCalendar from './pages/admin/WeeklyCalendar';
+import Settings from './pages/admin/Settings';
 import PrivateRoute from './components/PrivateRoute';
 import RoleBasedRoute from './components/RoleBasedRoute';
 import Navigation from './components/Navigation';
@@ -111,6 +114,11 @@ function AppContent() {
               <WeeklyCalendar />
             </RoleBasedRoute>
           } />
+          <Route path="/admin/settings" element={
+            <RoleBasedRoute allowedRoles={['ADMIN']}>
+              <Settings />
+            </RoleBasedRoute>
+          } />
 
           {/* Default redirect based on role */}
           <Route path="/" element={isAuthenticated ? <DefaultRedirect /> : <Navigate to="/login" />} />
@@ -123,11 +131,15 @@ function AppContent() {
 function App() {
   return (
     <Router>
-      <LanguageProvider>
-        <AuthProvider>
-          <AppContent />
-        </AuthProvider>
-      </LanguageProvider>
+      <ThemeProvider>
+        <SettingsProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          </LanguageProvider>
+        </SettingsProvider>
+      </ThemeProvider>
     </Router>
   );
 }

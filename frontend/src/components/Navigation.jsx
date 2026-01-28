@@ -1,12 +1,14 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useSettings } from '../context/SettingsContext';
 import LanguageSelector from './LanguageSelector';
 import './Navigation.css';
 
 const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useAuth();
   const { t } = useLanguage();
+  const { branding } = useSettings();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -24,7 +26,8 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
   const isAdmin = user?.role === 'ADMIN';
   const isInstructor = user?.role === 'INSTRUCTOR';
   const isStudent = user?.role === 'STUDENT';
-  const isStaff = isAdmin || isInstructor;
+  const isOfficeWorker = user?.role === 'OFFICE_WORKER';
+  const isStaff = isAdmin || isInstructor || isOfficeWorker;
 
   return (
     <>
@@ -50,7 +53,10 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Left Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
         <div className="sidebar-header">
-          <Link to={isStaff ? "/admin/calendar" : "/dashboard"} className="nav-brand">DanceSuite</Link>
+          <Link to={isStaff ? "/admin/calendar" : "/dashboard"} className="nav-brand">
+            {branding.logo && <img src={branding.logo} alt={branding.schoolName} className="brand-logo" />}
+            <span className="brand-name">{branding.schoolName}</span>
+          </Link>
         </div>
 
         <nav className="sidebar-nav">
@@ -61,6 +67,8 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
               <Link to="/admin/calendar" className={isActive('/admin/calendar') ? 'active' : ''}>{t('nav.calendar')}</Link>
               <Link to="/admin/classes" className={isActive('/admin/classes') ? 'active' : ''}>{t('nav.manageClasses')}</Link>
               <Link to="/admin/attendance" className={isActive('/admin/attendance') ? 'active' : ''}>{t('nav.takeAttendance')}</Link>
+
+              {/* Admin-only links */}
               {isAdmin && (
                 <>
                   <Link to="/admin/branches" className={isActive('/admin/branches') ? 'active' : ''}>{t('nav.branches')}</Link>
@@ -68,6 +76,16 @@ const Navigation = ({ sidebarOpen, setSidebarOpen }) => {
                   <Link to="/admin/payments" className={isActive('/admin/payments') ? 'active' : ''}>{t('nav.managePayments')}</Link>
                   <Link to="/admin/accounting" className={isActive('/admin/accounting') ? 'active' : ''}>{t('nav.accounting')}</Link>
                   <Link to="/admin/reports" className={isActive('/admin/reports') ? 'active' : ''}>{t('nav.reports')}</Link>
+                  <Link to="/admin/settings" className={isActive('/admin/settings') ? 'active' : ''}>{t('nav.settings')}</Link>
+                </>
+              )}
+
+              {/* Office Worker links */}
+              {isOfficeWorker && (
+                <>
+                  <Link to="/admin/users" className={isActive('/admin/users') ? 'active' : ''}>{t('nav.manageUsers')}</Link>
+                  <Link to="/admin/payments" className={isActive('/admin/payments') ? 'active' : ''}>{t('nav.managePayments')}</Link>
+                  <Link to="/admin/accounting" className={isActive('/admin/accounting') ? 'active' : ''}>{t('nav.accounting')}</Link>
                 </>
               )}
             </div>

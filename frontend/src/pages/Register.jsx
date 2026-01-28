@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from '../components/LanguageSelector';
 import './Auth.css';
 
 const Register = () => {
+  const { t } = useLanguage();
+  const { branding } = useSettings();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -42,11 +47,16 @@ const Register = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>DanceSuite</h1>
-        <h2>Create your account</h2>
+        <div className="auth-header">
+          {branding.logo && <img src={branding.logo} alt={branding.schoolName} className="auth-logo" />}
+          <h1>{branding.schoolName}</h1>
+          {branding.motto && <p className="auth-motto">{branding.motto}</p>}
+          <LanguageSelector />
+        </div>
+        <h2>{t('auth.createAccount')}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>First Name</label>
+            <label>{t('auth.firstName')}</label>
             <input
               type="text"
               name="firstName"
@@ -56,7 +66,7 @@ const Register = () => {
             />
           </div>
           <div className="form-group">
-            <label>Last Name</label>
+            <label>{t('auth.lastName')}</label>
             <input
               type="text"
               name="lastName"
@@ -66,7 +76,7 @@ const Register = () => {
             />
           </div>
           <div className="form-group">
-            <label>Email</label>
+            <label>{t('auth.email')}</label>
             <input
               type="email"
               name="email"
@@ -76,7 +86,7 @@ const Register = () => {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>{t('auth.password')}</label>
             <input
               type="password"
               name="password"
@@ -88,11 +98,11 @@ const Register = () => {
           </div>
           {error && <div className="error-message">{error}</div>}
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Creating account...' : 'Register'}
+            {loading ? t('common.loading') : t('auth.register')}
           </button>
         </form>
         <p className="auth-link">
-          Already have an account? <Link to="/login">Login here</Link>
+          {t('auth.hasAccount')} <Link to="/login">{t('auth.loginHere')}</Link>
         </p>
       </div>
     </div>

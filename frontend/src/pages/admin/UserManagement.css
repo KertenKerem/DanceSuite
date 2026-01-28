@@ -87,6 +87,11 @@
   color: white;
 }
 
+.badge-office-worker {
+  background: linear-gradient(135deg, var(--color-secondary-500) 0%, var(--color-secondary-600) 100%);
+  color: white;
+}
+
 .badge-student {
   background: linear-gradient(135deg, var(--color-success-500) 0%, var(--color-success-600) 100%);
   color: white;

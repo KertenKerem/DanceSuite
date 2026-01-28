@@ -19,6 +19,7 @@ model User {
   lastName       String
   role           Role     @default(STUDENT)
   profilePicture String?
+  branchId       String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -32,6 +33,7 @@ model User {
   parentPhone String?
   parentEmail String?
 
+  branch            Branch?                  @relation(fields: [branchId], references: [id], onDelete: SetNull)
   enrollments       Enrollment[]
   payments          Payment[]
   instructorClasses Class[]                  @relation("ClassInstructor")
@@ -44,6 +46,7 @@ enum Role {
   ADMIN
   INSTRUCTOR
   STUDENT
+  OFFICE_WORKER
 }
 
 model Class {
@@ -196,6 +199,7 @@ model Branch {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  users   User[]
   saloons Saloon[]
   classes Class[]
 
@@ -238,4 +242,25 @@ enum InstructorPaymentType {
   MONTHLY_SALARY
   PER_LESSON
   PERCENTAGE
+}
+
+// ============= SCHOOL SETTINGS (SINGLETON) =============
+
+model SchoolSettings {
+  id           String   @id @default("default")
+  schoolName   String   @default("DanceSuite")
+  motto        String?
+  logo         String?  @db.Text
+  primaryColor String?  @default("#a855f7")
+  theme        Theme    @default(LIGHT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("school_settings")
+}
+
+enum Theme {
+  LIGHT
+  DARK
+  SYSTEM
 }

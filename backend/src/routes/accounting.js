@@ -5,8 +5,8 @@ import { authenticate, authorize } from '../middleware/auth.js';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Get all expenses (Admin only)
-router.get('/expenses', authenticate, authorize('ADMIN'), async (req, res) => {
+// Get all expenses (Admin and Office Worker)
+router.get('/expenses', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
     const { startDate, endDate, category } = req.query;
     const where = {};
@@ -30,8 +30,8 @@ router.get('/expenses', authenticate, authorize('ADMIN'), async (req, res) => {
   }
 });
 
-// Create expense (Admin only)
-router.post('/expenses', authenticate, authorize('ADMIN'), async (req, res) => {
+// Create expense (Admin and Office Worker)
+router.post('/expenses', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
     const { category, amount, description, date, vendor, receipt } = req.body;
     const expense = await prisma.expense.create({
@@ -83,8 +83,8 @@ router.delete('/expenses/:id', authenticate, authorize('ADMIN'), async (req, res
   }
 });
 
-// Get financial summary (Admin only)
-router.get('/summary', authenticate, authorize('ADMIN'), async (req, res) => {
+// Get financial summary (Admin and Office Worker)
+router.get('/summary', authenticate, authorize('ADMIN', 'OFFICE_WORKER'), async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
     const dateFilter = {};
@@ -94,17 +94,43 @@ router.get('/summary', authenticate, authorize('ADMIN'), async (req, res) => {
       if (endDate) dateFilter.lte = new Date(endDate);
     }
 
+    // For office workers, filter by their branch
+    let branchFilter = {};
+    if (req.user.role === 'OFFICE_WORKER') {
+      const officeWorker = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        select: { branchId: true }
+      });
+
+      if (!officeWorker?.branchId) {
+        return res.status(403).json({ error: 'Office worker must be assigned to a branch' });
+      }
+
+      branchFilter = {
+        user: {
+          enrollments: {
+            some: {
+              class: {
+                branchId: officeWorker.branchId
+              }
+            }
+          }
+        }
+      };
+    }
+
     // Get total revenue from payments
     const payments = await prisma.payment.aggregate({
       where: {
         status: 'COMPLETED',
-        ...(Object.keys(dateFilter).length && { paymentDate: dateFilter })
+        ...(Object.keys(dateFilter).length && { paymentDate: dateFilter }),
+        ...(req.user.role === 'OFFICE_WORKER' && branchFilter)
       },
       _sum: { amount: true },
       _count: true
     });
 
-    // Get total expenses
+    // Get total expenses (all expenses for now, can be branch-specific later)
     const expenses = await prisma.expense.aggregate({
       where: Object.keys(dateFilter).length ? { date: dateFilter } : {},
       _sum: { amount: true },
@@ -120,7 +146,10 @@ router.get('/summary', authenticate, authorize('ADMIN'), async (req, res) => {
 
     // Get pending payments
     const pendingPayments = await prisma.payment.aggregate({
-      where: { status: 'PENDING' },
+      where: {
+        status: 'PENDING',
+        ...(req.user.role === 'OFFICE_WORKER' && branchFilter)
+      },
       _sum: { amount: true },
       _count: true
     });
@@ -207,6 +236,105 @@ router.get('/monthly', authenticate, authorize('ADMIN'), async (req, res) => {
     res.json(monthlyData);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch monthly breakdown' });
+  }
+});
+
+// Get instructor income (Admin only)
+router.get('/instructor-income', authenticate, authorize('ADMIN'), async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    // Get all instructors
+    const instructors = await prisma.user.findMany({
+      where: { role: 'INSTRUCTOR' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true
+      }
+    });
+
+    const dateFilter = {};
+    if (startDate || endDate) {
+      if (startDate) dateFilter.gte = new Date(startDate);
+      if (endDate) dateFilter.lte = new Date(endDate);
+    }
+
+    // Calculate income for each instructor
+    const instructorIncomeData = await Promise.all(
+      instructors.map(async (instructor) => {
+        // Get all classes taught by this instructor
+        const classes = await prisma.class.findMany({
+          where: { instructorId: instructor.id },
+          select: {
+            id: true,
+            name: true,
+            fee: true,
+            enrollments: {
+              select: {
+                id: true,
+                user: {
+                  select: {
+                    payments: {
+                      where: {
+                        status: 'COMPLETED',
+                        ...(Object.keys(dateFilter).length && { paymentDate: dateFilter })
+                      },
+                      select: {
+                        amount: true,
+                        paymentDate: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        // Calculate total income from all classes
+        let totalIncome = 0;
+        let totalStudents = 0;
+        let totalPayments = 0;
+
+        classes.forEach(cls => {
+          totalStudents += cls.enrollments.length;
+          cls.enrollments.forEach(enrollment => {
+            enrollment.user.payments.forEach(payment => {
+              totalIncome += payment.amount;
+              totalPayments++;
+            });
+          });
+        });
+
+        return {
+          instructor: {
+            id: instructor.id,
+            name: `${instructor.firstName} ${instructor.lastName}`,
+            email: instructor.email
+          },
+          totalIncome,
+          totalClasses: classes.length,
+          totalStudents,
+          totalPayments,
+          classes: classes.map(cls => ({
+            id: cls.id,
+            name: cls.name,
+            fee: cls.fee,
+            students: cls.enrollments.length
+          }))
+        };
+      })
+    );
+
+    // Sort by total income descending
+    instructorIncomeData.sort((a, b) => b.totalIncome - a.totalIncome);
+
+    res.json(instructorIncomeData);
+  } catch (error) {
+    console.error('Error fetching instructor income:', error);
+    res.status(500).json({ error: 'Failed to fetch instructor income' });
   }
 });
 
