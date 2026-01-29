@@ -77,7 +77,8 @@ export const attendanceAPI = {
   getByClass: (classId, date) => api.get(`/attendance/class/${classId}`, { params: { date } }),
   mark: (data) => api.post('/attendance', data),
   update: (id, data) => api.put(`/attendance/${id}`, data),
-  getStudentHistory: (userId) => api.get(`/attendance/student/${userId}`)
+  getStudentHistory: (userId) => api.get(`/attendance/student/${userId}`),
+  getReport: (params) => api.get('/attendance/report/filtered', { params })
 };
 
 // Reports API
@@ -96,7 +97,8 @@ export const accountingAPI = {
   deleteExpense: (id) => api.delete(`/accounting/expenses/${id}`),
   getSummary: (startDate, endDate) => api.get('/accounting/summary', { params: { startDate, endDate } }),
   getMonthly: (year) => api.get('/accounting/monthly', { params: { year } }),
-  getInstructorIncome: (startDate, endDate) => api.get('/accounting/instructor-income', { params: { startDate, endDate } })
+  getInstructorIncome: (startDate, endDate) => api.get('/accounting/instructor-income', { params: { startDate, endDate } }),
+  getReport: (params) => api.get('/accounting/report', { params })
 };
 
 // Branch API

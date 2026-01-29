@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { accountingAPI, paymentAPI } from '../../services/api';
+import { accountingAPI, paymentAPI, userAPI, classAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import './Accounting.css';
 
 const EXPENSE_CATEGORIES = [
@@ -10,7 +12,7 @@ const EXPENSE_CATEGORIES = [
 ];
 
 const Accounting = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('overview');
   const [summary, setSummary] = useState(null);
   const [monthlyData, setMonthlyData] = useState([]);
@@ -29,6 +31,19 @@ const Accounting = () => {
     date: new Date().toISOString().split('T')[0],
     vendor: ''
   });
+
+  // Report state
+  const [reportData, setReportData] = useState(null);
+  const [reportFilters, setReportFilters] = useState({
+    startDate: '',
+    endDate: '',
+    instructorId: '',
+    studentId: '',
+    classId: ''
+  });
+  const [instructors, setInstructors] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -53,7 +68,43 @@ const Accounting = () => {
       } else if (activeTab === 'instructors') {
         const res = await accountingAPI.getInstructorIncome();
         setInstructorIncome(res.data);
+      } else if (activeTab === 'reports') {
+        await loadFilterOptions();
       }
+    } catch (err) {
+      setError(t('errors.general'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadFilterOptions = async () => {
+    try {
+      const [instructorsRes, studentsRes, classesRes] = await Promise.all([
+        userAPI.getAll('INSTRUCTOR'),
+        userAPI.getAll('STUDENT'),
+        classAPI.getAll()
+      ]);
+      setInstructors(instructorsRes.data);
+      setStudents(studentsRes.data);
+      setClasses(classesRes.data);
+    } catch (err) {
+      console.error('Failed to load filter options:', err);
+    }
+  };
+
+  const fetchReport = async () => {
+    try {
+      setLoading(true);
+      const params = {};
+      if (reportFilters.startDate) params.startDate = reportFilters.startDate;
+      if (reportFilters.endDate) params.endDate = reportFilters.endDate;
+      if (reportFilters.instructorId) params.instructorId = reportFilters.instructorId;
+      if (reportFilters.studentId) params.studentId = reportFilters.studentId;
+      if (reportFilters.classId) params.classId = reportFilters.classId;
+
+      const res = await accountingAPI.getReport(params);
+      setReportData(res.data);
     } catch (err) {
       setError(t('errors.general'));
     } finally {
@@ -127,6 +178,182 @@ const Accounting = () => {
     return t(`accounting.categories.${category.toLowerCase()}`) || category;
   };
 
+  const exportReportToPDF = () => {
+    if (!reportData) return;
+
+    const doc = new jsPDF({
+      compress: true,
+      putOnlyUsedFonts: true
+    });
+
+    // Use courier font for better Unicode support
+    doc.setFont('courier');
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Title
+    doc.setFontSize(18);
+    doc.setFont('courier', 'bold');
+    doc.text(t('accounting.financialReport'), pageWidth / 2, 22, { align: 'center' });
+
+    // Date range
+    doc.setFontSize(9);
+    doc.setFont('courier', 'normal');
+    const locale = language === 'tr' ? 'tr-TR' : 'en-US';
+    let dateText = t('accounting.generatedOn') + ': ' + new Date().toLocaleDateString(locale);
+    if (reportFilters.startDate || reportFilters.endDate) {
+      dateText += ' | ' + t('accounting.period') + ': ';
+      if (reportFilters.startDate) dateText += new Date(reportFilters.startDate).toLocaleDateString(locale);
+      dateText += ' - ';
+      if (reportFilters.endDate) dateText += new Date(reportFilters.endDate).toLocaleDateString(locale);
+    }
+    doc.text(dateText, pageWidth / 2, 32, { align: 'center' });
+
+    let yPos = 48;
+
+    // Summary Section
+    doc.setFontSize(13);
+    doc.setFont('courier', 'bold');
+    doc.text(t('accounting.summary'), 14, yPos);
+    yPos += 8;
+
+    doc.setFontSize(9);
+    doc.setFont('courier', 'normal');
+    doc.text(t('accounting.totalRevenue') + ': ' + formatCurrency(reportData.summary.totalRevenue), 14, yPos);
+    yPos += 5;
+    doc.text(t('accounting.totalExpenses') + ': ' + formatCurrency(reportData.summary.totalExpenses), 14, yPos);
+    yPos += 5;
+    doc.setFont('courier', 'bold');
+    doc.text(t('accounting.netIncome') + ': ' + formatCurrency(reportData.summary.netIncome), 14, yPos);
+    yPos += 12;
+
+    // Instructor Breakdown
+    if (reportData.instructorStats.length > 0) {
+      doc.setFontSize(13);
+      doc.setFont('courier', 'bold');
+      doc.text(t('accounting.instructorBreakdown'), 14, yPos);
+      yPos += 5;
+
+      autoTable(doc, {
+        startY: yPos,
+        head: [[
+          t('users.instructor'),
+          t('accounting.revenue'),
+          t('nav.payments'),
+          t('classes.classes')
+        ]],
+        body: reportData.instructorStats.map(stat => [
+          stat.name,
+          formatCurrency(stat.revenue),
+          stat.payments.toString(),
+          stat.classes.join(', ')
+        ]),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [168, 85, 247],
+          font: 'courier',
+          fontStyle: 'bold'
+        },
+        styles: {
+          fontSize: 8,
+          font: 'courier'
+        },
+        margin: { left: 14, right: 14 }
+      });
+
+      yPos = doc.lastAutoTable.finalY + 15;
+    }
+
+    // Payment Details
+    if (reportData.payments.length > 0) {
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 22;
+      }
+
+      doc.setFontSize(13);
+      doc.setFont('courier', 'bold');
+      doc.text(t('accounting.paymentDetails'), 14, yPos);
+      yPos += 5;
+
+      const locale = language === 'tr' ? 'tr-TR' : 'en-US';
+      autoTable(doc, {
+        startY: yPos,
+        head: [[
+          t('common.date'),
+          t('users.student'),
+          t('classes.classes'),
+          t('payments.amount')
+        ]],
+        body: reportData.payments.map(payment => [
+          new Date(payment.date).toLocaleDateString(locale),
+          payment.student.name,
+          payment.classes.map(cls => `${cls.name} - ${cls.instructor}`).join('\n'),
+          formatCurrency(payment.amount)
+        ]),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [168, 85, 247],
+          font: 'courier',
+          fontStyle: 'bold'
+        },
+        styles: {
+          fontSize: 7,
+          font: 'courier'
+        },
+        margin: { left: 14, right: 14 }
+      });
+
+      yPos = doc.lastAutoTable.finalY + 15;
+    }
+
+    // Expense Details
+    if (reportData.expenses.length > 0) {
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 22;
+      }
+
+      doc.setFontSize(13);
+      doc.setFont('courier', 'bold');
+      doc.text(t('accounting.expenseDetails'), 14, yPos);
+      yPos += 5;
+
+      const locale = language === 'tr' ? 'tr-TR' : 'en-US';
+      autoTable(doc, {
+        startY: yPos,
+        head: [[
+          t('common.date'),
+          t('accounting.category'),
+          t('classes.description'),
+          t('accounting.vendor'),
+          t('payments.amount')
+        ]],
+        body: reportData.expenses.map(expense => [
+          new Date(expense.date).toLocaleDateString(locale),
+          formatCategory(expense.category),
+          expense.description,
+          expense.vendor || '-',
+          formatCurrency(expense.amount)
+        ]),
+        theme: 'grid',
+        headStyles: {
+          fillColor: [168, 85, 247],
+          font: 'courier',
+          fontStyle: 'bold'
+        },
+        styles: {
+          fontSize: 7,
+          font: 'courier'
+        },
+        margin: { left: 14, right: 14 }
+      });
+    }
+
+    // Save PDF
+    const fileName = `financial-report-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
+  };
+
   if (loading && !summary) return <div className="page loading">{t('common.loading')}</div>;
 
   return (
@@ -161,6 +388,12 @@ const Accounting = () => {
           onClick={() => setActiveTab('payments')}
         >
           {t('nav.payments')}
+        </button>
+        <button
+          className={`tab ${activeTab === 'reports' ? 'active' : ''}`}
+          onClick={() => setActiveTab('reports')}
+        >
+          {t('accounting.reports')}
         </button>
       </div>
 
@@ -395,6 +628,219 @@ const Accounting = () => {
               <p className="no-data">{t('payments.noPayments')}</p>
             )}
           </div>
+        </div>
+      )}
+
+      {activeTab === 'reports' && (
+        <div className="reports-content">
+          <div className="card">
+            <h2>{t('accounting.reportFilters')}</h2>
+            <div className="report-filters">
+              <div className="filter-row">
+                <div className="form-group">
+                  <label>{t('accounting.startDate')}</label>
+                  <input
+                    type="date"
+                    value={reportFilters.startDate}
+                    onChange={(e) => setReportFilters({ ...reportFilters, startDate: e.target.value })}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>{t('accounting.endDate')}</label>
+                  <input
+                    type="date"
+                    value={reportFilters.endDate}
+                    onChange={(e) => setReportFilters({ ...reportFilters, endDate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="filter-row">
+                <div className="form-group">
+                  <label>{t('users.instructor')}</label>
+                  <select
+                    value={reportFilters.instructorId}
+                    onChange={(e) => setReportFilters({ ...reportFilters, instructorId: e.target.value })}
+                  >
+                    <option value="">{t('accounting.allInstructors')}</option>
+                    {instructors.map((instructor) => (
+                      <option key={instructor.id} value={instructor.id}>
+                        {instructor.firstName} {instructor.lastName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>{t('users.student')}</label>
+                  <select
+                    value={reportFilters.studentId}
+                    onChange={(e) => setReportFilters({ ...reportFilters, studentId: e.target.value })}
+                  >
+                    <option value="">{t('accounting.allStudents')}</option>
+                    {students.map((student) => (
+                      <option key={student.id} value={student.id}>
+                        {student.firstName} {student.lastName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>{t('classes.class')}</label>
+                  <select
+                    value={reportFilters.classId}
+                    onChange={(e) => setReportFilters({ ...reportFilters, classId: e.target.value })}
+                  >
+                    <option value="">{t('accounting.allClasses')}</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="filter-actions">
+                <button className="btn-primary" onClick={fetchReport}>
+                  {t('accounting.generateReport')}
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => setReportFilters({
+                    startDate: '',
+                    endDate: '',
+                    instructorId: '',
+                    studentId: '',
+                    classId: ''
+                  })}
+                >
+                  {t('accounting.clearFilters')}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {reportData && (
+            <>
+              <div className="card">
+                <div className="report-header">
+                  <h2>{t('accounting.reportSummary')}</h2>
+                  <button className="btn-primary" onClick={() => exportReportToPDF()}>
+                    {t('accounting.exportPDF')}
+                  </button>
+                </div>
+
+                <div className="summary-cards">
+                  <div className="summary-card revenue">
+                    <h3>{t('accounting.totalRevenue')}</h3>
+                    <p className="amount">{formatCurrency(reportData.summary.totalRevenue)}</p>
+                    <span className="count">{reportData.summary.paymentCount} {t('nav.payments').toLowerCase()}</span>
+                  </div>
+                  <div className="summary-card expenses">
+                    <h3>{t('accounting.totalExpenses')}</h3>
+                    <p className="amount">{formatCurrency(reportData.summary.totalExpenses)}</p>
+                    <span className="count">{reportData.summary.expenseCount} {t('accounting.expenses').toLowerCase()}</span>
+                  </div>
+                  <div className="summary-card net-income">
+                    <h3>{t('accounting.netIncome')}</h3>
+                    <p className={`amount ${reportData.summary.netIncome >= 0 ? 'positive' : 'negative'}`}>
+                      {formatCurrency(reportData.summary.netIncome)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {reportData.instructorStats.length > 0 && (
+                <div className="card">
+                  <h2>{t('accounting.instructorBreakdown')}</h2>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>{t('users.instructor')}</th>
+                        <th>{t('accounting.revenue')}</th>
+                        <th>{t('nav.payments')}</th>
+                        <th>{t('classes.classes')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reportData.instructorStats.map((stat) => (
+                        <tr key={stat.id}>
+                          <td>{stat.name}</td>
+                          <td className="positive">{formatCurrency(stat.revenue)}</td>
+                          <td>{stat.payments}</td>
+                          <td>{stat.classes.join(', ')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              <div className="card">
+                <h2>{t('accounting.paymentDetails')}</h2>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>{t('common.date')}</th>
+                      <th>{t('users.student')}</th>
+                      <th>{t('classes.classes')}</th>
+                      <th>{t('payments.amount')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportData.payments.map((payment) => (
+                      <tr key={payment.id}>
+                        <td>{new Date(payment.date).toLocaleDateString()}</td>
+                        <td>{payment.student.name}</td>
+                        <td>
+                          {payment.classes.map((cls, idx) => (
+                            <div key={idx}>{cls.name} - {cls.instructor}</div>
+                          ))}
+                        </td>
+                        <td className="positive">{formatCurrency(payment.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {reportData.payments.length === 0 && (
+                  <p className="no-data">{t('payments.noPayments')}</p>
+                )}
+              </div>
+
+              <div className="card">
+                <h2>{t('accounting.expenseDetails')}</h2>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>{t('common.date')}</th>
+                      <th>{t('accounting.category')}</th>
+                      <th>{t('classes.description')}</th>
+                      <th>{t('accounting.vendor')}</th>
+                      <th>{t('payments.amount')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportData.expenses.map((expense) => (
+                      <tr key={expense.id}>
+                        <td>{new Date(expense.date).toLocaleDateString()}</td>
+                        <td>
+                          <span className={`category-badge ${expense.category.toLowerCase()}`}>
+                            {formatCategory(expense.category)}
+                          </span>
+                        </td>
+                        <td>{expense.description}</td>
+                        <td>{expense.vendor || '-'}</td>
+                        <td className="negative">{formatCurrency(expense.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {reportData.expenses.length === 0 && (
+                  <p className="no-data">{t('accounting.noExpenses')}</p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 

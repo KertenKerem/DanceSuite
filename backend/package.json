@@ -23,7 +23,9 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "express-validator": "^7.0.1"
+    "express-validator": "^7.0.1",
+    "winston": "^3.11.0",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "prisma": "^5.14.0",
