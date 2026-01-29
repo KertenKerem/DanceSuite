@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
@@ -45,6 +43,9 @@ services:
   fluent-bit:
     image: fluent/fluent-bit:2.2
     container_name: dancesuite-fluentbit
+    ports:
+      - "24224:24224"
+      - "2020:2020"
     volumes:
       - ./logging/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - ./logging/parsers.conf:/fluent-bit/etc/parsers.conf
@@ -66,5 +67,5 @@ networks:
   logging:
     driver: bridge
   dancesuite_default:
-    name: dancesuite-network
+    name: dancesuite_dancesuite-network
     external: true
