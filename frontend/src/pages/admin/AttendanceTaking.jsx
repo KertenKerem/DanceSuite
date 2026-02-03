@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { addTurkishFont } from '../../utils/pdfFonts';
 import './AttendanceTaking.css';
 
 const AttendanceTaking = () => {
@@ -174,22 +175,24 @@ const AttendanceTaking = () => {
         putOnlyUsedFonts: true
       });
 
-      // Use courier font for better Unicode support
-      doc.setFont('courier');
+      // Load Turkish-compatible font (Roboto with UTF-8 support)
+      addTurkishFont(doc);
+      doc.setFont('NotoSans', 'normal');
+
       const pageWidth = doc.internal.pageSize.getWidth();
+      const locale = language === 'tr' ? 'tr-TR' : 'en-US';
 
       // Title
       doc.setFontSize(18);
-      doc.setFont('courier', 'bold');
+      doc.setFont('NotoSans', 'bold');
       const title = t('attendance.attendanceReport');
       doc.text(title, pageWidth / 2, 22, { align: 'center' });
 
       // Date range
       doc.setFontSize(9);
-      doc.setFont('courier', 'normal');
+      doc.setFont('NotoSans', 'normal');
       const generatedLabel = t('accounting.generatedOn');
       const periodLabel = t('accounting.period');
-      const locale = language === 'tr' ? 'tr-TR' : 'en-US';
       let dateText = generatedLabel + ': ' + new Date().toLocaleDateString(locale);
       if (reportFilters.startDate || reportFilters.endDate) {
         dateText += ' | ' + periodLabel + ': ';
@@ -203,12 +206,12 @@ const AttendanceTaking = () => {
 
       // Summary Section
       doc.setFontSize(13);
-      doc.setFont('courier', 'bold');
+      doc.setFont('NotoSans', 'bold');
       doc.text(t('accounting.summary'), 14, yPos);
       yPos += 8;
 
       doc.setFontSize(9);
-      doc.setFont('courier', 'normal');
+      doc.setFont('NotoSans', 'normal');
       doc.text(t('attendance.totalRecords') + ': ' + reportData.summary.totalRecords, 14, yPos);
       yPos += 5;
       doc.text(t('attendance.attendanceRate') + ': ' + reportData.summary.attendanceRate + '%', 14, yPos);
@@ -225,7 +228,7 @@ const AttendanceTaking = () => {
       // Class Summary
       if (reportData.classSummary.length > 0) {
         doc.setFontSize(13);
-        doc.setFont('courier', 'bold');
+        doc.setFont('NotoSans', 'bold');
         doc.text(t('attendance.classSummary'), 14, yPos);
         yPos += 5;
 
@@ -246,12 +249,12 @@ const AttendanceTaking = () => {
           theme: 'grid',
           headStyles: {
             fillColor: [168, 85, 247],
-            font: 'courier',
+            font: 'NotoSans',
             fontStyle: 'bold'
           },
           styles: {
             fontSize: 8,
-            font: 'courier'
+            font: 'NotoSans'
           },
           margin: { left: 14, right: 14 }
         });
@@ -267,7 +270,7 @@ const AttendanceTaking = () => {
         }
 
         doc.setFontSize(13);
-        doc.setFont('courier', 'bold');
+        doc.setFont('NotoSans', 'bold');
         doc.text(t('attendance.studentSummary'), 14, yPos);
         yPos += 5;
 
@@ -290,12 +293,12 @@ const AttendanceTaking = () => {
           theme: 'grid',
           headStyles: {
             fillColor: [168, 85, 247],
-            font: 'courier',
+            font: 'NotoSans',
             fontStyle: 'bold'
           },
           styles: {
             fontSize: 7,
-            font: 'courier'
+            font: 'NotoSans'
           },
           margin: { left: 14, right: 14 }
         });
@@ -311,11 +314,10 @@ const AttendanceTaking = () => {
         }
 
         doc.setFontSize(13);
-        doc.setFont('courier', 'bold');
+        doc.setFont('NotoSans', 'bold');
         doc.text(t('attendance.detailedRecords'), 14, yPos);
         yPos += 5;
 
-        const locale = language === 'tr' ? 'tr-TR' : 'en-US';
         autoTable(doc, {
           startY: yPos,
           head: [[
@@ -333,12 +335,12 @@ const AttendanceTaking = () => {
           theme: 'grid',
           headStyles: {
             fillColor: [168, 85, 247],
-            font: 'courier',
+            font: 'NotoSans',
             fontStyle: 'bold'
           },
           styles: {
             fontSize: 7,
-            font: 'courier'
+            font: 'NotoSans'
           },
           margin: { left: 14, right: 14 }
         });

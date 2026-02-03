@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { addTurkishFont } from '../../utils/pdfFonts';
 import './Accounting.css';
 
 const EXPENSE_CATEGORIES = [
@@ -181,24 +182,27 @@ const Accounting = () => {
   const exportReportToPDF = () => {
     if (!reportData) return;
 
+    try {
     const doc = new jsPDF({
       compress: true,
       putOnlyUsedFonts: true
     });
 
-    // Use courier font for better Unicode support
-    doc.setFont('courier');
+    // Load Turkish-compatible font (Roboto with UTF-8 support)
+    addTurkishFont(doc);
+    doc.setFont('NotoSans', 'normal');
+
     const pageWidth = doc.internal.pageSize.getWidth();
+    const locale = language === 'tr' ? 'tr-TR' : 'en-US';
 
     // Title
     doc.setFontSize(18);
-    doc.setFont('courier', 'bold');
+    doc.setFont('NotoSans', 'bold');
     doc.text(t('accounting.financialReport'), pageWidth / 2, 22, { align: 'center' });
 
     // Date range
     doc.setFontSize(9);
-    doc.setFont('courier', 'normal');
-    const locale = language === 'tr' ? 'tr-TR' : 'en-US';
+    doc.setFont('NotoSans', 'normal');
     let dateText = t('accounting.generatedOn') + ': ' + new Date().toLocaleDateString(locale);
     if (reportFilters.startDate || reportFilters.endDate) {
       dateText += ' | ' + t('accounting.period') + ': ';
@@ -212,24 +216,24 @@ const Accounting = () => {
 
     // Summary Section
     doc.setFontSize(13);
-    doc.setFont('courier', 'bold');
+    doc.setFont('NotoSans', 'bold');
     doc.text(t('accounting.summary'), 14, yPos);
     yPos += 8;
 
     doc.setFontSize(9);
-    doc.setFont('courier', 'normal');
+    doc.setFont('NotoSans', 'normal');
     doc.text(t('accounting.totalRevenue') + ': ' + formatCurrency(reportData.summary.totalRevenue), 14, yPos);
     yPos += 5;
     doc.text(t('accounting.totalExpenses') + ': ' + formatCurrency(reportData.summary.totalExpenses), 14, yPos);
     yPos += 5;
-    doc.setFont('courier', 'bold');
+    doc.setFont('NotoSans', 'bold');
     doc.text(t('accounting.netIncome') + ': ' + formatCurrency(reportData.summary.netIncome), 14, yPos);
     yPos += 12;
 
     // Instructor Breakdown
     if (reportData.instructorStats.length > 0) {
       doc.setFontSize(13);
-      doc.setFont('courier', 'bold');
+      doc.setFont('NotoSans', 'bold');
       doc.text(t('accounting.instructorBreakdown'), 14, yPos);
       yPos += 5;
 
@@ -250,12 +254,12 @@ const Accounting = () => {
         theme: 'grid',
         headStyles: {
           fillColor: [168, 85, 247],
-          font: 'courier',
+          font: 'NotoSans',
           fontStyle: 'bold'
         },
         styles: {
           fontSize: 8,
-          font: 'courier'
+          font: 'NotoSans'
         },
         margin: { left: 14, right: 14 }
       });
@@ -271,11 +275,10 @@ const Accounting = () => {
       }
 
       doc.setFontSize(13);
-      doc.setFont('courier', 'bold');
+      doc.setFont('NotoSans', 'bold');
       doc.text(t('accounting.paymentDetails'), 14, yPos);
       yPos += 5;
 
-      const locale = language === 'tr' ? 'tr-TR' : 'en-US';
       autoTable(doc, {
         startY: yPos,
         head: [[
@@ -293,12 +296,12 @@ const Accounting = () => {
         theme: 'grid',
         headStyles: {
           fillColor: [168, 85, 247],
-          font: 'courier',
+          font: 'NotoSans',
           fontStyle: 'bold'
         },
         styles: {
           fontSize: 7,
-          font: 'courier'
+          font: 'NotoSans'
         },
         margin: { left: 14, right: 14 }
       });
@@ -314,11 +317,10 @@ const Accounting = () => {
       }
 
       doc.setFontSize(13);
-      doc.setFont('courier', 'bold');
+      doc.setFont('NotoSans', 'bold');
       doc.text(t('accounting.expenseDetails'), 14, yPos);
       yPos += 5;
 
-      const locale = language === 'tr' ? 'tr-TR' : 'en-US';
       autoTable(doc, {
         startY: yPos,
         head: [[
@@ -338,12 +340,12 @@ const Accounting = () => {
         theme: 'grid',
         headStyles: {
           fillColor: [168, 85, 247],
-          font: 'courier',
+          font: 'NotoSans',
           fontStyle: 'bold'
         },
         styles: {
           fontSize: 7,
-          font: 'courier'
+          font: 'NotoSans'
         },
         margin: { left: 14, right: 14 }
       });
@@ -352,6 +354,10 @@ const Accounting = () => {
     // Save PDF
     const fileName = `financial-report-${new Date().toISOString().split('T')[0]}.pdf`;
     doc.save(fileName);
+    } catch (error) {
+      console.error('PDF export error:', error);
+      alert(t('errors.general') + ': ' + error.message);
+    }
   };
 
   if (loading && !summary) return <div className="page loading">{t('common.loading')}</div>;
