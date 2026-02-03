@@ -1,36 +1,6 @@
 /* DanceSuite - Accounting Styles */
 /* Uses design system variables from styles/variables.css */
-
-/* Tabs */
-.tabs {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  border-bottom: 2px solid var(--border-light);
-  padding-bottom: 0;
-}
-
-.tab {
-  padding: var(--space-3) var(--space-5);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--text-tertiary);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.tab:hover {
-  color: var(--color-primary-600);
-}
-
-.tab.active {
-  color: var(--color-primary-600);
-  border-bottom-color: var(--color-primary-600);
-}
+/* Note: .tabs, .tab, .btn-primary, .btn-secondary, .btn-sm, .btn-edit, .btn-delete are defined globally in index.css */
 
 /* Summary Cards */
 .summary-cards {
@@ -248,40 +218,6 @@
   gap: var(--space-2);
 }
 
-.btn-sm {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-xs);
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-weight: var(--font-medium);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.btn-edit {
-  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
-  color: white;
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-edit:hover {
-  background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.btn-delete {
-  background: linear-gradient(135deg, var(--color-error-500) 0%, var(--color-error-600) 100%);
-  color: white;
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-delete:hover {
-  background: linear-gradient(135deg, var(--color-error-600) 0%, var(--color-error-700) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
 /* No Data State */
 .no-data {
   text-align: center;
@@ -331,41 +267,6 @@
   margin-top: var(--space-5);
   padding-top: var(--space-5);
   border-top: var(--border-width-thin) solid var(--border-light);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
-  color: white;
-  padding: var(--space-3) var(--space-5);
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  transition: all var(--duration-fast) var(--ease-out);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  padding: var(--space-3) var(--space-5);
-  border: var(--border-width-thin) solid var(--border-default);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.btn-secondary:hover {
-  background: var(--color-neutral-200);
 }
 
 /* Instructors Content */
@@ -588,15 +489,6 @@
 
   .action-buttons {
     flex-direction: column;
-  }
-
-  .tabs {
-    flex-wrap: wrap;
-  }
-
-  .tab {
-    padding: var(--space-2) var(--space-4);
-    font-size: var(--text-xs);
   }
 
   .instructor-header {

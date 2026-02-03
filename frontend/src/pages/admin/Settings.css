@@ -1,5 +1,6 @@
 /* DanceSuite - Settings Page Styles */
 /* Uses design system variables from styles/variables.css */
+/* Note: .tab-btn, .btn-primary, .btn-secondary, .btn-sm, .btn-delete are defined globally in index.css */
 
 .settings-page {
   max-width: 900px;
@@ -7,32 +8,9 @@
 
 .settings-tabs {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin-bottom: var(--space-6);
-  border-bottom: 2px solid var(--border-light);
-  padding-bottom: 0;
-}
-
-.tab-btn {
-  padding: var(--space-3) var(--space-5);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--text-tertiary);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.tab-btn:hover {
-  color: var(--color-primary-600);
-}
-
-.tab-btn.active {
-  color: var(--color-primary-600);
-  border-bottom-color: var(--color-primary-600);
+  padding-top: var(--space-2);
 }
 
 .settings-content {
@@ -290,65 +268,6 @@
   margin-bottom: var(--space-4);
 }
 
-/* Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
-  color: white;
-  padding: var(--space-3) var(--space-5);
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  transition: all var(--duration-fast) var(--ease-out);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.btn-primary:disabled {
-  background: var(--color-neutral-300);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.btn-secondary {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  padding: var(--space-3) var(--space-5);
-  border: var(--border-width-thin) solid var(--border-default);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.btn-secondary:hover {
-  background: var(--color-neutral-200);
-  border-color: var(--color-primary-400);
-}
-
-.btn-sm {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-xs);
-}
-
-.btn-delete {
-  background: linear-gradient(135deg, var(--color-error-500) 0%, var(--color-error-600) 100%);
-  color: white;
-  border: none;
-}
-
-.btn-delete:hover {
-  background: linear-gradient(135deg, var(--color-error-600) 0%, var(--color-error-700) 100%);
-}
-
 /* Success Message */
 .success-message {
   background: var(--color-success-100);
@@ -373,11 +292,6 @@
 @media (max-width: 768px) {
   .settings-tabs {
     flex-wrap: wrap;
-  }
-
-  .tab-btn {
-    padding: var(--space-2) var(--space-4);
-    font-size: var(--text-xs);
   }
 
   .settings-content {

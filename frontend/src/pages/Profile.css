@@ -125,35 +125,12 @@
 }
 
 /* Tabs */
+/* Note: .tab-btn styles are defined globally in index.css */
 .profile-tabs {
   display: flex;
-  gap: var(--space-4);
-  border-bottom: var(--border-width-thin) solid var(--border-default);
+  gap: var(--space-3);
   margin-bottom: var(--space-6);
-}
-
-.tab-btn {
-  padding: var(--space-3) var(--space-5);
-  background: none;
-  border: none;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--text-tertiary);
-  cursor: pointer;
-  position: relative;
-  transition: all var(--duration-fast) var(--ease-out);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-
-.tab-btn:hover {
-  color: var(--color-primary-600);
-}
-
-.tab-btn.active {
-  color: var(--color-primary-600);
-  font-weight: var(--font-semibold);
-  border-bottom-color: var(--color-primary-600);
+  padding-top: var(--space-2);
 }
 
 /* Form */
