@@ -121,7 +121,10 @@ export default {
     minor: 'Minor',
     yearsOld: 'years old',
     newPassword: 'New Password (leave blank to keep current)',
-    noUsersFound: 'No users found'
+    noUsersFound: 'No users found',
+    assignedBranch: 'Assigned Branch',
+    selectBranch: 'Select a branch',
+    branchHelp: 'Office workers can only manage data from their assigned branch'
   },
 
   classes: {

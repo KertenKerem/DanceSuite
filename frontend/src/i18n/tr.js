@@ -121,7 +121,10 @@ export default {
     minor: 'Reşit değil',
     yearsOld: 'yaşında',
     newPassword: 'Yeni Şifre (değiştirmemek için boş bırakın)',
-    noUsersFound: 'Kullanıcı bulunamadı'
+    noUsersFound: 'Kullanıcı bulunamadı',
+    assignedBranch: 'Atanan Şube',
+    selectBranch: 'Şube seçin',
+    branchHelp: 'Ofis çalışanları yalnızca atandıkları şubenin verilerini yönetebilir'
   },
 
   classes: {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { userAPI } from '../../services/api';
+import { userAPI, branchAPI } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import Modal from '../../components/Modal';
 import InstructorPaymentForm from '../../components/admin/InstructorPaymentForm';
@@ -8,6 +8,7 @@ import './UserManagement.css';
 const UserManagement = () => {
   const { t } = useLanguage();
   const [users, setUsers] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterRole, setFilterRole] = useState('');
@@ -24,11 +25,13 @@ const UserManagement = () => {
     birthday: '',
     parentName: '',
     parentPhone: '',
-    parentEmail: ''
+    parentEmail: '',
+    branchId: ''
   });
 
   useEffect(() => {
     fetchUsers();
+    fetchBranches();
   }, [filterRole]);
 
   const fetchUsers = async () => {
@@ -40,6 +43,15 @@ const UserManagement = () => {
       setError(t('errors.general'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBranches = async () => {
+    try {
+      const response = await branchAPI.getAll();
+      setBranches(response.data);
+    } catch (err) {
+      console.error('Failed to fetch branches:', err);
     }
   };
 
@@ -79,6 +91,13 @@ const UserManagement = () => {
         delete submitData.parentEmail;
       }
 
+      // Only include branchId for OFFICE_WORKER role
+      if (submitData.role !== 'OFFICE_WORKER') {
+        delete submitData.branchId;
+      } else if (!submitData.branchId) {
+        delete submitData.branchId;
+      }
+
       if (editingUser) {
         await userAPI.update(editingUser.id, submitData);
       } else {
@@ -106,7 +125,8 @@ const UserManagement = () => {
       birthday: user.birthday ? new Date(user.birthday).toISOString().split('T')[0] : '',
       parentName: user.parentName || '',
       parentPhone: user.parentPhone || '',
-      parentEmail: user.parentEmail || ''
+      parentEmail: user.parentEmail || '',
+      branchId: user.branchId || ''
     });
     setShowModal(true);
   };
@@ -133,7 +153,8 @@ const UserManagement = () => {
       birthday: '',
       parentName: '',
       parentPhone: '',
-      parentEmail: ''
+      parentEmail: '',
+      branchId: ''
     });
   };
 
@@ -292,7 +313,7 @@ const UserManagement = () => {
               <label>{t('users.role')} *</label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value, branchId: '' })}
               >
                 <option value="STUDENT">{t('users.student')}</option>
                 <option value="INSTRUCTOR">{t('users.instructor')}</option>
@@ -300,6 +321,24 @@ const UserManagement = () => {
                 <option value="ADMIN">{t('users.admin')}</option>
               </select>
             </div>
+
+            {formData.role === 'OFFICE_WORKER' && (
+              <div className="form-group">
+                <label>{t('users.assignedBranch')}</label>
+                <select
+                  value={formData.branchId}
+                  onChange={(e) => setFormData({ ...formData, branchId: e.target.value })}
+                >
+                  <option value="">{t('users.selectBranch')}</option>
+                  {branches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </option>
+                  ))}
+                </select>
+                <small className="form-help">{t('users.branchHelp')}</small>
+              </div>
+            )}
           </div>
 
           {isStudent && (
