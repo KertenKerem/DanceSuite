@@ -1,4 +1,3 @@
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -13,6 +12,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - dancesuite-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dancesuite -d dancesuite"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -27,22 +31,15 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
       - ./backend/src:/app/src
       - ./backend/prisma:/app/prisma
+      - ./backend/docker-entrypoint.sh:/app/docker-entrypoint.sh
       - backend_node_modules:/app/node_modules
     networks:
       - dancesuite-network
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: backend.{{.Name}}
-        fluentd-async: "true"
-        fluentd-retry-wait: "1s"
-        fluentd-max-retries: "5"
-    command: bun run dev
 
   frontend:
     build:
@@ -53,21 +50,14 @@ services:
       VITE_API_URL: http://localhost:3000/api
     ports:
       - "5173:5173"
+    depends_on:
+      - backend
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
       - frontend_node_modules:/app/node_modules
     networks:
       - dancesuite-network
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: frontend.{{.Name}}
-        fluentd-async: "true"
-        fluentd-retry-wait: "1s"
-        fluentd-max-retries: "5"
-    command: bun run dev
 
 volumes:
   postgres_data:
