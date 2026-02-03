@@ -7,8 +7,10 @@ COPY package.json bun.lockb* ./
 RUN bun install
 
 COPY src ./src
-COPY public ./public
 COPY index.html vite.config.js ./
+
+# Copy public directory if it exists and has content
+COPY public ./public
 
 EXPOSE 5173
 
